@@ -1,0 +1,218 @@
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: url('assets/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  overflow: hidden;
+}
+
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #1a1a1a, #2c2c2c);
+  padding: 25px;
+  box-shadow: 2px 0 30px rgba(255, 77, 77, 0.6);
+  transition: width 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar:hover {
+  width: 260px;
+}
+
+.logo {
+  width: 150px;
+  margin: 0 auto 40px;
+  filter: drop-shadow(0 0 25px #ff4d4d);
+  animation: neon-pulse 1s infinite;
+}
+
+@keyframes neon-pulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 15px #ff4d4d); }
+  50% { transform: scale(1.2); filter: drop-shadow(0 0 30px #ff4d4d); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 15px #ff4d4d); }
+}
+
+.sidebar-item {
+  padding: 15px;
+  margin: 10px 0;
+  background: #3a3a3a;
+  border-radius: 15px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-item:hover {
+  background: var(--primary-color);
+  transform: translateX(8px);
+  box-shadow: 0 0 30px var(--primary-color);
+}
+
+.sidebar-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 77, 77, 0.6), transparent);
+  transition: 0.5s;
+}
+
+.sidebar-item:hover::after {
+  left: 100%;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.92);
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(255, 77, 77, 0.5);
+}
+
+.top-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+#url-bar, #history-search, #search-input, #note-input, #ai-input, #fps-limit {
+  flex-grow: 1;
+  padding: 15px;
+  background: #2c2c2c;
+  border: 3px solid var(--primary-color);
+  color: #fff;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+#url-bar:focus, #history-search:focus, #search-input:focus, #note-input:focus, #ai-input:focus, #fps-limit:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 25px var(--primary-color);
+  outline: none;
+}
+
+button {
+  padding: 15px 30px;
+  background: var(--primary-color);
+  border: none;
+  color: #fff;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: var(--secondary-color);
+  box-shadow: 0 0 25px var(--primary-color);
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 15px 30px;
+  background: #333;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab.active {
+  background: var(--primary-color);
+  box-shadow: 0 0 25px var(--primary-color);
+}
+
+.tab.tor {
+  border: 2px solid #7d4698;
+}
+
+.tab:hover {
+  background: var(--secondary-color);
+}
+
+.panel {
+  width: 450px;
+  background: #222;
+  padding: 30px;
+  border-left: 5px solid var(--primary-color);
+  border-radius: 0 20px 20px 0;
+  box-shadow: -5px 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.panel h3 {
+  margin: 0 0 25px;
+  color: var(--primary-color);
+  text-transform: uppercase;
+}
+
+.panel ul, .panel textarea, .panel select {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  background: #333;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.panel li {
+  padding: 15px;
+  background: #333;
+  margin: 10px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.panel li:hover {
+  background: var(--primary-color);
+}
+
+webview {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+}
+
+.theme-dark {
+  --primary-color: #ff4d4d;
+  --secondary-color: #ff6666;
+}
+
+.theme-neon {
+  --primary-color: #ff00ff;
+  --secondary-color: #ff66ff;
+}
+
+@keyframes neon-glow {
+  0% { box-shadow: 0 0 5px var(--primary-color); }
+  50% { box-shadow: 0 0 35px var(--primary-color); }
+  100% { box-shadow: 0 0 5px var(--primary-color); }
+}
