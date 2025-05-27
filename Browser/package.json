@@ -1,0 +1,24 @@
+{
+  "name": "sava-browser",
+  "version": "2.0.0",
+  "description": "Przeglądarka inspirowana Opera GX i Brave z Lyra AI",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "crawl": "node search.js"
+  },
+  "dependencies": {
+    "electron": "^30.0.0",
+    "systeminformation": "^5.22.0",
+    "@cliqz/adblocker-electron": "^1.26.0",
+    "electron-store": "^8.1.0",
+    "cheerio": "^1.0.0",
+    "axios": "^1.7.2",
+    "node-fetch": "^2.6.12",
+    "tor-request": "^1.2.0",
+    "firebase": "^10.14.1"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0"
+  }
+}
