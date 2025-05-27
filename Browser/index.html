@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sava Browser</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <script src="assets/particles.min.js"></script>
+</head>
+<body>
+  <div id="particles-js" class="particles"></div>
+  <div class="container">
+    <!-- Pasek boczny -->
+    <div class="sidebar">
+      <img src="assets/logo.svg" alt="Sava Browser Logo" class="logo">
+      <div class="sidebar-item" onclick="loadHome()">Strona główna</div>
+      <div class="sidebar-item" onclick="openNewTab()">Nowa karta</div>
+      <div class="sidebar-item" onclick="openTorTab()">Karta Tor</div>
+      <div class="sidebar-item" onclick="openIncognito()">Incognito</div>
+      <div class="sidebar-item" onclick="showBookmarks()">Zakładki</div>
+      <div class="sidebar-item" onclick="showHistory()">Historia</div>
+      <div class="sidebar-item" onclick="showNotes()">Notatki</div>
+      <div class="sidebar-item" onclick="showSystemInfo()">Zasoby</div>
+      <div class="sidebar-item" onclick="showSearch()">Wyszukiwanie</div>
+      <div class="sidebar-item" onclick="showLyraAI()">Lyra AI</div>
+      <div class="sidebar-item" onclick="showDownloads()">Pobieranie</div>
+      <div class="sidebar-item" onclick="showSettings()">Ustawienia</div>
+      <div class="sidebar-item" onclick="toggleVPN()">VPN: <span id="vpn-status">Wył.</span></div>
+    </div>
+    <!-- Główny obszar -->
+    <div class="main-content">
+      <div class="top-bar">
+        <input type="text" id="url-bar" placeholder="Wpisz adres URL lub wyszukaj..." onkeypress="handleUrl(event)">
+        <button onclick="toggleFullScreen()">Pełny ekran</button>
+        <button onclick="closeTab()">Zamknij kartę</button>
+      </div>
+      <div id="tabs" class="tabs"></div>
+      <webview id="webview" src="https://www.example.com" style="width: 100%; height: calc(100% - 40px);"></webview>
+    </div>
+    <!-- Panele boczne -->
+    <div id="system-info" class="panel" style="display: none;">
+      <h3>Zasoby systemowe</h3>
+      <p id="cpu-info"></p>
+      <p id="memory-info"></p>
+      <p id="gpu-info"></p>
+      <button onclick="limitResources(30)">Ogranicz FPS (30)</button>
+      <button onclick="limitResources(60)">Zwolnij ograniczenia (60)</button>
+    </div>
+    <div id="bookmarks" class="panel" style="display: none;">
+      <h3>Zakładki</h3>
+      <select id="bookmark-category">
+        <option value="all">Wszystkie</option>
+        <option value="praca">Praca</option>
+        <option value="rozrywka">Rozrywka</option>
+      </select>
+      <button onclick="syncBookmarks()">Synchronizuj zakładki</button>
+      <ul id="bookmark-list"></ul>
+      <button onclick="addBookmark()">Dodaj zakładkę</button>
+    </div>
+    <div id="history" class="panel" style="display: none;">
+      <h3>Historia</h3>
+      <input type="text" id="history-search" placeholder="Wyszukaj w historii..." oninput="searchHistory()">
+      <button onclick="syncHistory()">Synchronizuj historię</button>
+      <ul id="history-list"></ul>
+    </div>
+    <div id="notes" class="panel" style="display: none;">
+      <h3>Notatki</h3>
+      <textarea id="note-input" placeholder="Wpisz notatkę..."></textarea>
+      <button onclick="addNote()">Dodaj notatkę</button>
+      <ul id="note-list"></ul>
+    </div>
+    <div id="search" class="panel" style="display: none;">
+      <h3>Wyszukiwanie</h3>
+      <input type="text" id="search-input" placeholder="Wpisz zapytanie..." onkeypress="handleSearch(event)">
+      <ul id="search-results"></ul>
+    </div>
+    <div id="lyra-ai" class="panel" style="display: none;">
+      <h3>Lyra AI</h3>
+      <input type="text" id="ai-input" placeholder="Zadaj pytanie Lyra AI..." onkeypress="handleAIQuery(event)">
+      <div id="ai-response"></div>
+    </div>
+    <div id="downloads" class="panel" style="display: none;">
+      <h3>Pobieranie</h3>
+      <ul id="download-list"></ul>
+    </div>
+    <div id="settings" class="panel" style="display: none;">
+      <h3>Ustawienia</h3>
+      <label><input type="checkbox" id="auto-vpn"> Automatyczne włączanie VPN</label>
+      <label>Limit FPS: <input type="number" id="fps-limit" min="10" max="60" value="60"></label>
+      <label>Motyw:
+        <select id="theme-select">
+          <option value="dark">Ciemny</option>
+          <option value="neon">Neonowy</option>
+        </select>
+      </label>
+      <button onclick="saveSettings()">Zapisz ustawienia</button>
+    </div>
+  </div>
+  <script src="renderer.js"></script>
+  <script>
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 120, density: { enable: true, value_area: 800 } },
+        color: { value: '#ff4d4d' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.7, random: true },
+        size: { value: 5, random: true },
+        line_linked: { enable: true, distance: 150, color: '#ff4d4d', opacity: 0.6, width: 1.5 },
+        move: { enable: true, speed: 4, direction: 'none', random: true }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+        modes: { repulse: { distance: 120, duration: 0.4 }, push: { particles_nb: 5 } }
+      }
+    });
+  </script>
+</body>
+</html>
