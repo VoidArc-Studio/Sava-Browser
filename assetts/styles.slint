@@ -1,0 +1,23 @@
+export struct Theme {
+    primary-color: color,
+    secondary-color: color,
+    background: color,
+    text-color: color,
+    border-radius: length,
+    shadow-color: color,
+    accent-color: color,
+}
+
+export global AppTheme {
+    in property <Theme> current-theme: {
+        primary-color: #1a73e8, // Chrome-like blue
+        secondary-color: #e8f0fe,
+        background: #ffffff,
+        text-color: #202124,
+        border-radius: 8px,
+        shadow-color: #00000020,
+        accent-color: #fbbc05
+    };
+
+    callback change-theme(string);
+}
