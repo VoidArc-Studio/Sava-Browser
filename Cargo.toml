@@ -18,8 +18,3 @@ oauth2 = "4.4"                             # Autoryzacja OAuth
 aes-gcm = "0.10"                           # Szyfrowanie danych
 wasm-bindgen = "0.2"                       # Obsługa WebAssembly
 chrono = "0.4"                             # Czas
-
-# Adblock z GitHuba - jeśli masz problem z autoryzacją, poniżej znajdziesz rozwiązanie
-adblock = { git = "https://github.com/ArniDagur/adblock-rs.git", rev = "7c3c1d2" }
-# Jeżeli masz skonfigurowane SSH do GitHuba, możesz zamienić na:
-# adblock = { git = "ssh://git@github.com/ArniDagur/adblock-rs.git", rev = "7c3c1d2" }
