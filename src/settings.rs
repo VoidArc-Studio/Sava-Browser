@@ -13,6 +13,7 @@ pub struct Settings {
 
 impl Settings {
     pub fn load() -> Self {
+        // TODO: Wczytaj z pliku JSON
         Settings {
             theme: "dark".to_string(),
             homepage: "https://startpage.com".to_string(),
@@ -25,5 +26,6 @@ impl Settings {
 
     pub fn save(&self) {
         // TODO: Zapisz do pliku JSON
+        println!("Settings saved: {:?}", self);
     }
 }
