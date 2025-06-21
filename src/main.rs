@@ -50,6 +50,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         });
     });
 
+    ui.on_switch_tab(move |index| {
+        let browser = Arc::clone(&browser_clone);
+        tokio::spawn(async move {
+            let mut browser = browser.lock().await;
+            browser.switch_tab(index as usize);
+        });
+    });
+
     ui.on_toggle_incognito(move || {
         let browser = Arc::clone(&browser_clone);
         tokio::spawn(async move {
@@ -74,6 +82,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let response = ai.handle_request(query.to_string(), mode).await;
             // TODO: Wyświetl w UI
             println!("Sava AI Response: {}", response);
+        });
+    });
+
+    ui.on_save_settings(move |theme, homepage, block_ads, block_js| {
+        let browser = Arc::clone(&browser_clone);
+        tokio::spawn(async move {
+            let mut browser = browser.lock().await;
+            browser.update_settings(theme.to_string(), homepage.to_string(), block_ads, block_js);
         });
     });
 
