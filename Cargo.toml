@@ -13,7 +13,7 @@ tokio = { version = "1.40", features = ["full"] }               # Async runtime
 url = "2.5"                              # Parsowanie URL
 webbrowser = "0.8"                       # Otwieranie linków
 keyring = "2.0"                          # Szyfrowane hasła
-adblock = "0.7"                          # Blokowanie reklam (poprawiona nazwa crate)
+adblock = "0.6"                          # Blokowanie reklam (stabilna wersja)
 rand = "0.8"                             # Losowe User-Agent
 oauth2 = "4.4"                           # Autoryzacja OAuth
 aes-gcm = "0.10"                         # Szyfrowanie danych
