@@ -16,10 +16,10 @@ pub struct Bookmark {
     folder: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Clone)]
 pub struct BookmarkManager {
     bookmarks: Vec<Bookmark>,
-    #[serde(skip)] // Nie serializujemy privacy managera!
+    #[serde(skip)]
     privacy: PrivacyManager,
 }
 
@@ -36,7 +36,7 @@ impl BookmarkManager {
         let (encrypted_data, nonce) = self.privacy.encrypt_data(&url);
         let bookmark = Bookmark {
             url: EncryptedField { data: encrypted_data, nonce },
-            title: "New Bookmark".to_string(), // TODO: Pobierz tytuł strony
+            title: "New Bookmark".to_string(),
             folder: "Default".to_string(),
         };
         self.bookmarks.push(bookmark);
@@ -69,7 +69,6 @@ impl BookmarkManager {
     }
 }
 
-// Osobny typ do serializacji bez PrivacyManager
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 struct BookmarkManagerSer {
     bookmarks: Vec<Bookmark>,
