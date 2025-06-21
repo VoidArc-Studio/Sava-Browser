@@ -6,6 +6,7 @@ export struct Theme {
     border-radius: length,
     shadow-color: color,
     accent-color: color,
+    hover-color: color,
 }
 
 export global AppTheme {
@@ -16,7 +17,8 @@ export global AppTheme {
         text-color: #202124,
         border-radius: 8px,
         shadow-color: #00000020,
-        accent-color: #fbbc05
+        accent-color: #fbbc05,
+        hover-color: #d2e3fc
     };
 
     callback change-theme(string);
