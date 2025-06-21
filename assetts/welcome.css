@@ -1,3 +1,4 @@
+```css
 body {
     margin: 0;
     font-family: 'Roboto', Arial, sans-serif;
@@ -79,25 +80,57 @@ p {
 .search-bar button:hover {
     background: #e55f00;
 }
-.quick-links {
-    display: flex;
-    justify-content: center;
-    gap: 35px;
+.speed-dial {
     margin-bottom: 50px;
-    flex-wrap: wrap;
 }
-.quick-links a {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 22px;
-    padding: 14px 28px;
-    border-radius: 35px;
+.speed-dial h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.speed-dial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    justify-content: center;
+}
+.speed-dial-tile {
+    position: relative;
     background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
     transition: background 0.3s ease, transform 0.2s ease;
 }
-.quick-links a:hover {
+.speed-dial-tile:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(1.05);
+}
+.speed-dial-tile a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 18px;
+}
+.speed-dial-tile .remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #ff5555;
+    cursor: pointer;
+    font-size: 16px;
+}
+.speed-dial button {
+    background: #ff6b00;
+    border: none;
+    padding: 12px 30px;
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 30px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.speed-dial button:hover {
+    background: #e55f00;
 }
 .ai-prompt {
     font-size: 20px;
@@ -124,3 +157,4 @@ p {
     50% { transform: rotate(180deg); }
     100% { transform: rotate(360deg); }
 }
+```
