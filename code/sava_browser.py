@@ -2,8 +2,11 @@ import sys
 import os
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt5.QtCore import QUrl, QSettings, Qt
-from sava_ui import SavaUI  # Changed from relative to absolute import
+from PyQt5.QtCore import QUrl, QSettings, Qt, QTimer
+from PyQt5.QtGui import QIcon
+import datetime
+
+from sava_ui import SavaUI  # Absolute import
 
 def load_stylesheet(path):
     """Load QSS stylesheet from file."""
@@ -27,7 +30,7 @@ class SavaBrowser(QMainWindow):
         self.sessions = self.load_file("sessions.json", [])
         self.speed_dial = self.load_file("speed_dial.json", [])
         self.web_panels = self.load_file("web_panels.json", [])
-        self.ai = SavaAI()
+        self.ai = None  # Handled by SavaUI now
         self.ad_block_enabled = self.settings.value("ad_block_enabled", True, type=bool)
         self.theme = self.settings.value("theme", "Vivaldi")
         self.ui = SavaUI(self)
@@ -71,7 +74,6 @@ class SavaBrowser(QMainWindow):
 
     def autosave_session(self):
         """Autosave current session every 5 minutes."""
-        from PyQt5.QtCore import QTimer
         timer = QTimer(self)
         timer.timeout.connect(self.save_current_session)
         timer.start(300000)  # 5 minutes
@@ -86,6 +88,18 @@ class SavaBrowser(QMainWindow):
         }
         self.sessions.append(session)
         self.save_file("sessions.json", self.sessions)
+
+    def load_session(self, session):
+        """Load a saved session (placeholder; to be implemented in UI)."""
+        self.ui.tabs.clear()
+        for tab in session["tabs"]:
+            self.ui.add_new_tab(QUrl(tab["url"]), tab["title"])
+        self.sessions.remove(session)
+        self.save_file("sessions.json", self.sessions)
+
+    def open_settings(self):
+        """Open settings dialog via UI."""
+        self.ui.parent_open_settings()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
