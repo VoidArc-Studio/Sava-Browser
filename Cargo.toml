@@ -1,6 +1,6 @@
 [package]
 name = "sava-browser"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 
 [dependencies]
@@ -16,3 +16,6 @@ keyring = "2.0"                      # Szyfrowane hasła
 adblock-rust = "0.7"                 # Blokowanie reklam
 rand = "0.8"                         # Losowe User-Agent
 oauth2 = "4.4"                       # Autoryzacja OAuth
+aes-gcm = "0.10"                     # Szyfrowanie danych
+wasm-bindgen = "0.2"                 # Obsługa WebAssembly
+chrono = "0.4"                       # Czas
