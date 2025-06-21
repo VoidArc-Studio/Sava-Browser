@@ -12,27 +12,34 @@ mod history;
 mod plugins;
 
 use browser::Browser;
-use ui::AppWindowWrapper; // Wrapper, nie ten typ z .slint
+use ui::AppWindowWrapper;
+use wry::application::event_loop::EventLoop;
+use wry::application::window::WindowBuilder;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Inicjalizacja Slint UI
-    let ui = AppWindowWrapper::new()?; // Wrapper zawiera ui: AppWindow (.slint)
-    let ui_handle = ui.as_weak();
+    // Tworzenie EventLoop i głównego okna Wry
+    let event_loop = EventLoop::new();
+    let window = WindowBuilder::new()
+        .with_title("Sava Browser")
+        .build(&event_loop)
+        .expect("Failed to build Window");
 
-    // Inicjalizacja przeglądarki
-    let browser = Arc::new(Mutex::new(Browser::new()));
+    // Inicjalizacja Slint UI
+    let ui = AppWindowWrapper::new()?;
+    let _ui_handle = ui.as_weak();
+
+    // Inicjalizacja przeglądarki (z Window)
+    let browser = Arc::new(Mutex::new(Browser::new(window)));
     let browser_clone = Arc::clone(&browser);
 
-    // Callbacki UI
+    // Callbacki dla UI
     ui.on_open_url({
         let browser = Arc::clone(&browser_clone);
         move |url| {
             let browser = Arc::clone(&browser);
             tokio::spawn(async move {
                 let mut browser = browser.lock().await;
-                // Potrzebujesz Window dla WebViewBuilder!
-                // browser.navigate(url.to_string(), window);
                 browser.navigate(url.to_string());
             });
         }
@@ -44,7 +51,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let browser = Arc::clone(&browser);
             tokio::spawn(async move {
                 let mut browser = browser.lock().await;
-                // browser.new_tab(window);
                 browser.new_tab();
             });
         }
@@ -67,7 +73,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let browser = Arc::clone(&browser);
             tokio::spawn(async move {
                 let mut browser = browser.lock().await;
-                // browser.switch_tab(index as usize, window);
                 browser.switch_tab(index as usize);
             });
         }
@@ -79,7 +84,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let browser = Arc::clone(&browser);
             tokio::spawn(async move {
                 let mut browser = browser.lock().await;
-                // browser.toggle_incognito(window);
                 browser.toggle_incognito();
             });
         }
