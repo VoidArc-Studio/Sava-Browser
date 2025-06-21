@@ -11,7 +11,7 @@ from PyQt5.QtGui import QIcon, QFont, QCursor, QPixmap
 import os
 import uuid
 import datetime
-from sava_ai import SavaAI
+# from sava_ai import SavaAI   # ZAKOMENTUJ LUB USUŃ
 from ad_block_page import AdBlockingWebEnginePage
 
 class SavaUI:
