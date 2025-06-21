@@ -1,5 +1,6 @@
 use reqwest::Client;
-use oauth2::{basic::BasicClient, AuthUrl, ClientId, TokenUrl};
+use oauth2::{basic::BasicClient, AuthUrl, ClientId, TokenUrl, ClientSecret};
+use serde_json::Value;
 
 #[derive(Clone)]
 pub struct Assistant {
@@ -11,19 +12,26 @@ pub struct Assistant {
 
 impl Assistant {
     pub fn new() -> Self {
-        // Przykład konfiguracji OAuth dla GitHub
         let github_client = BasicClient::new(
             ClientId::new("your-github-client-id".to_string()),
-            None,
+            Some(ClientSecret::new("your-github-client-secret".to_string())),
             AuthUrl::new("https://github.com/login/oauth/authorize".to_string()).unwrap(),
             Some(TokenUrl::new("https://github.com/login/oauth/access_token".to_string()).unwrap()),
         );
 
+        let gitlab_client = BasicClient::new(
+            ClientId::new("your-gitlab-client-id".to_string()),
+            Some(ClientSecret::new("your-gitlab-client-secret".to_string())),
+            AuthUrl::new("https://gitlab.com/oauth/authorize".to_string()).unwrap(),
+            Some(TokenUrl::new("https://gitlab.com/oauth/token".to_string()).unwrap()),
+        );
+
+        // SourceForge nie ma pełnego wsparcia OAuth, więc używamy API key
         Assistant {
             client: Client::new(),
             github_client: Some(github_client),
-            gitlab_client: None, // TODO: GitLab OAuth
-            sourceforge_client: None, // TODO: SourceForge OAuth
+            gitlab_client: Some(gitlab_client),
+            sourceforge_client: None,
         }
     }
 
@@ -52,8 +60,16 @@ impl Assistant {
             let url = format!("https://api.github.com/repos/{}", repo);
             let response = self.client.get(&url).send().await.unwrap().text().await.unwrap();
             return format!("GitHub repo info for '{}': {}", repo, response.chars().take(100).collect::<String>());
+        } else if query.starts_with("gitlab:") {
+            let repo = query.strip_prefix("gitlab:").unwrap().trim();
+            let url = format!("https://gitlab.com/api/v4/projects/{}", repo);
+            let response = self.client.get(&url).send().await.unwrap().text().await.unwrap();
+            return format!("GitLab project info for '{}': {}", repo, response.chars().take(100).collect::<String>());
+        } else if query.starts_with("sourceforge:") {
+            // SourceForge API (przykład)
+            let project = query.strip_prefix("sourceforge:").unwrap().trim();
+            return format!("SourceForge project info for '{}': Not fully implemented", project);
         }
-        // TODO: GitLab, SourceForge
-        format!("Developer mode: Processing '{}'. Try 'github:owner/repo'!", query)
+        format!("Developer mode: Processing '{}'. Try 'github:owner/repo', 'gitlab:id', or 'sourceforge:project'!", query)
     }
 }
