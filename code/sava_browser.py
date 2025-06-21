@@ -1,15 +1,21 @@
 import sys
 import os
 import json
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QHBoxLayout,
-                             QLineEdit, QPushButton, QToolBar, QAction, QMenu, QDialog, QFormLayout,
-                             QComboBox, QCheckBox, QLabel, QListWidget, QMessageBox, QFileDialog, QGridLayout,
-                             QDockWidget, QTextEdit)
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QHBoxLayout,
+    QLineEdit, QPushButton, QToolBar, QAction, QMenu, QDialog, QFormLayout,
+    QComboBox, QCheckBox, QLabel, QListWidget, QMessageBox, QFileDialog, QGridLayout,
+    QDockWidget, QTextEdit, QFrame, QInputDialog
+)
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage, QWebEngineDownloadItem
 from PyQt5.QtCore import QUrl, Qt, QSettings, QPropertyAnimation, QEasingCurve
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPixmap
 import uuid
 import datetime
+
+def load_stylesheet(path):
+    with open(path, "r") as f:
+        return f.read()
 
 # Mock Sava AI with enhanced responses
 class SavaAI:
@@ -28,12 +34,12 @@ class SavaAI:
             prev = self.context[-2] if len(self.context) > 1 else "no prior context"
             return f"Sava AI (Conversation): '{query}' - Continuing from '{prev}', here's a detailed response!"
         elif self.current_mode == "Programmer":
-            return f"Sava AI (Programmer): '{query}' - Solution:\n```python\n# Example\ndef demo():\n    return 'Sava AI'\nprint(demo())\n```"
+            return (f"Sava AI (Programmer): '{query}' - Solution:\n"
+                    "```python\n# Example\ndef demo():\n    return 'Sava AI'\nprint(demo())\n```")
         elif self.current_mode == "Web Search":
             return f"Sava AI (Web Search): Searching Startpage for '{query}' - Results: [Mock Result 1], [Mock Result 2]."
         return "Sava AI: Unknown mode."
 
-# Custom WebEnginePage with advanced ad-blocking
 class AdBlockingWebEnginePage(QWebEnginePage):
     def __init__(self, profile, parent=None):
         super().__init__(profile, parent)
@@ -55,7 +61,7 @@ class SavaBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Sava Browser")
-        self.setWindowIcon(QIcon(os.path.join("assets", "sava_icon.png")))
+        self.setWindowIcon(QIcon.fromTheme("applications-internet"))
         self.settings = QSettings("SavaBrowser", "Settings")
         self.history = []
         self.bookmarks = self.load_bookmarks()
@@ -64,45 +70,46 @@ class SavaBrowser(QMainWindow):
         self.sessions = self.load_sessions()
         self.ai = SavaAI()
         self.ad_block_enabled = self.settings.value("ad_block_enabled", True, type=bool)
-        self.theme = self.settings.value("theme", "Vivaldi")
+        self.theme = self.settings.value("theme", "Light")
         self.tab_groups = {}
         self.web_panels = []
         self.init_ui()
 
     def init_ui(self):
-        # Sidebar (Vivaldi-style)
+        # Sidebar
         self.sidebar = QDockWidget()
         self.sidebar.setFixedWidth(220)
         self.sidebar.setFeatures(QDockWidget.NoDockWidgetFeatures)
         sidebar_widget = QWidget()
         sidebar_layout = QVBoxLayout()
-        self.sidebar.setWidget(sidebar_widget)
         sidebar_widget.setLayout(sidebar_layout)
+        self.sidebar.setWidget(sidebar_widget)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.sidebar)
 
-        # Sidebar buttons
+        sidebar_layout.addWidget(QLabel("<b>NAWIGACJA</b>"))
         sidebar_layout.addWidget(QPushButton("🌐 Web", clicked=self.hide_sidebar_content))
-        self.notes_btn = QPushButton("📝 Notes")
-        self.notes_btn.clicked.connect(self.show_notes)
-        sidebar_layout.addWidget(self.notes_btn)
-        sidebar_layout.addWidget(QPushButton("🔒 Privacy", clicked=self.show_privacy_dashboard))
-        sidebar_layout.addWidget(QPushButton("🕒 History", clicked=self.show_history))
-        sidebar_layout.addWidget(QPushButton("↓ Downloads", clicked=self.show_downloads))
-        sidebar_layout.addWidget(QPushButton("📑 Tabs", clicked=self.show_tab_overview))
-        sidebar_layout.addWidget(QPushButton("💾 Sessions", clicked=self.show_sessions))
+        sidebar_layout.addWidget(QPushButton("📝 Notatki", clicked=self.show_notes))
+        sidebar_layout.addWidget(QPushButton("🕒 Historia", clicked=self.show_history))
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        sidebar_layout.addWidget(line)
+        sidebar_layout.addWidget(QLabel("<b>INNE</b>"))
+        sidebar_layout.addWidget(QPushButton("🔒 Prywatność", clicked=self.show_privacy_dashboard))
+        sidebar_layout.addWidget(QPushButton("↓ Pobierania", clicked=self.show_downloads))
+        sidebar_layout.addWidget(QPushButton("📑 Karty", clicked=self.show_tab_overview))
+        sidebar_layout.addWidget(QPushButton("💾 Sesje", clicked=self.show_sessions))
         self.web_panel_btn = QPushButton("➕ Web Panel")
         self.web_panel_btn.clicked.connect(self.add_web_panel)
         sidebar_layout.addWidget(self.web_panel_btn)
         sidebar_layout.addStretch()
 
-        # Notes panel
         self.notes_widget = QTextEdit()
         self.notes_widget.setPlaceholderText("Jot down your notes here...")
         self.notes_widget.textChanged.connect(self.save_notes)
         self.notes_widget.hide()
         sidebar_layout.addWidget(self.notes_widget)
 
-        # Web panels
         self.web_panel_widgets = []
         for panel_url in self.web_panels:
             web_panel = QWebEngineView()
@@ -112,60 +119,45 @@ class SavaBrowser(QMainWindow):
             sidebar_layout.addWidget(web_panel)
             self.web_panel_widgets.append(web_panel)
 
-        # Main layout
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.main_layout = QVBoxLayout(self.central_widget)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setContentsMargins(6, 6, 6, 6)
 
-        # Toolbar
         self.toolbar = QToolBar()
         self.toolbar.setMovable(False)
+        self.toolbar.setIconSize(Qt.QSize(22, 22))
         self.main_layout.addWidget(self.toolbar)
 
-        # Navigation buttons
-        self.back_btn = QAction("◄", self)
-        self.back_btn.setToolTip("Back")
+        self.back_btn = QAction(QIcon.fromTheme("go-previous"), "", self)
         self.back_btn.triggered.connect(self.navigate_back)
         self.toolbar.addAction(self.back_btn)
-
-        self.forward_btn = QAction("►", self)
-        self.forward_btn.setToolTip("Forward")
+        self.forward_btn = QAction(QIcon.fromTheme("go-next"), "", self)
         self.forward_btn.triggered.connect(self.navigate_forward)
         self.toolbar.addAction(self.forward_btn)
-
-        self.reload_btn = QAction("↻", self)
-        self.reload_btn.setToolTip("Reload")
+        self.reload_btn = QAction(QIcon.fromTheme("view-refresh"), "", self)
         self.reload_btn.triggered.connect(self.reload_page)
         self.toolbar.addAction(self.reload_btn)
+        self.toolbar.addSeparator()
 
-        # URL bar
         self.url_bar = QLineEdit()
         self.url_bar.setPlaceholderText("Search with Startpage or type 'sava:query' for AI")
         self.url_bar.returnPressed.connect(self.navigate_to_url)
-        self.url_bar.setFont(QFont("Roboto", 12))
-        self.url_bar.setMinimumWidth(700)
+        self.url_bar.setFont(QFont("Segoe UI", 12))
+        self.url_bar.setMinimumWidth(400)
         self.toolbar.addWidget(self.url_bar)
+        self.toolbar.addSeparator()
 
-        # AI Assistant
-        self.ai_btn = QAction("🤖", self)
-        self.ai_btn.setToolTip("Sava AI Assistant")
+        self.ai_btn = QAction(QIcon.fromTheme("system-search"), "Sava AI", self)
         self.ai_btn.triggered.connect(self.open_ai_dialog)
         self.toolbar.addAction(self.ai_btn)
-
-        # Bookmarks
-        self.bookmark_btn = QAction("★", self)
-        self.bookmark_btn.setToolTip("Bookmark this page")
+        self.bookmark_btn = QAction(QIcon.fromTheme("bookmark-new"), "Bookmark", self)
         self.bookmark_btn.triggered.connect(self.add_bookmark)
         self.toolbar.addAction(self.bookmark_btn)
-
-        # Tab Group
-        self.tab_group_btn = QAction("📂", self)
-        self.tab_group_btn.setToolTip("Group Tabs")
+        self.tab_group_btn = QAction(QIcon.fromTheme("folder-new"), "Group Tabs", self)
         self.tab_group_btn.triggered.connect(self.group_tabs)
         self.toolbar.addAction(self.tab_group_btn)
 
-        # Menu
         self.menu = QMenu("Menu", self)
         self.new_tab_action = QAction("New Tab", self)
         self.new_tab_action.triggered.connect(self.add_new_tab)
@@ -176,19 +168,16 @@ class SavaBrowser(QMainWindow):
         self.menu.addAction(self.new_tab_action)
         self.menu.addMenu(self.bookmarks_menu)
         self.menu.addAction(self.settings_action)
-        self.menu_btn = QPushButton("☰")
-        self.menu_btn.setToolTip("Menu")
+        self.menu_btn = QPushButton(QIcon.fromTheme("application-menu"), "")
         self.menu_btn.setMenu(self.menu)
         self.toolbar.addWidget(self.menu_btn)
 
-        # Tabs
         self.tabs = QTabWidget()
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self.close_tab)
         self.tabs.currentChanged.connect(self.update_url_bar)
         self.main_layout.addWidget(self.tabs)
 
-        # Load welcome page
         welcome_path = os.path.abspath(os.path.join("assets", "welcome.html"))
         if os.path.exists(welcome_path):
             self.add_new_tab(QUrl.fromLocalFile(welcome_path), "Welcome")
@@ -196,84 +185,12 @@ class SavaBrowser(QMainWindow):
             QMessageBox.warning(self, "Error", "Welcome page not found. Loading Startpage.")
             self.add_new_tab(QUrl("https://www.startpage.com"), "Startpage")
 
-        # Apply theme
         self.apply_theme()
 
     def apply_theme(self):
-        stylesheet = """
-            QMainWindow { background-color: #f5f6f5; }
-            QDockWidget { background-color: #2a2b2e; color: #ffffff; }
-            QDockWidget::title { background: #2a2b2e; }
-            QToolBar { 
-                background: #ffffff; 
-                border: none; 
-                padding: 10px;
-                box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            }
-            QLineEdit { 
-                padding: 12px; 
-                border: none; 
-                border-radius: 30px; 
-                margin: 5px 20px; 
-                background: #f0f0f0; 
-                transition: background 0.3s, box-shadow 0.3s;
-            }
-            QLineEdit:focus { 
-                background: #ffffff; 
-                box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
-            }
-            QPushButton, QAction { 
-                padding: 12px; 
-                font-size: 14px; 
-                border-radius: 10px; 
-                background: transparent;
-                color: #333;
-                transition: background 0.2s, transform 0.1s;
-            }
-            QPushButton:hover, QAction:hover { 
-                background: #e0e0e0; 
-                transform: scale(1.05);
-            }
-            QTabWidget::pane { border: none; background: #fff; }
-            QTabBar::tab { 
-                background: #d8d9d8; 
-                padding: 14px 30px; 
-                margin-right: 2px; 
-                border-top-left-radius: 10px; 
-                border-top-right-radius: 10px; 
-                font-size: 14px;
-                transition: background 0.3s, box-shadow 0.3s;
-            }
-            QTabBar::tab:selected { 
-                background: #ffffff; 
-                border-bottom: 4px solid #ff6b00; 
-                box-shadow: 0 -3px 6px rgba(0,0,0,0.1);
-            }
-            QTabBar::tab:hover { 
-                background: #c8c9c8; 
-            }
-            QTabBar::close-button { 
-                width: 16px; 
-                height: 16px; 
-                background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABmJLR0QA/wD/AP+gvaeTAAAAdUlEQVQokZWOQQrCQAxF7x+wW7AJbsAKbsAK3IAV2IBtYAM2YJfsr3k4Mzs7O8/8vs/MY4wxhhiXyZSO+/1+CoWCoiiKoiRJkmzZSIkiKoiRJkmJ4sU4Hs/zPM/zPM/zvM/zPM/zPM/zPM/zPM/zPM/zvJ/3B5z6L9Yf8r0SAAAAAElFTkSuQkCC);
-                border-radius: 8px;
-                margin-right: 5px;
-            }
-            QTabBar::close-button:hover { 
-                background: #ff5555; 
-            }
-            QTextEdit { 
-                background: #f9f9f9; 
-                border: none; 
-                border-radius: 10px; 
-                padding: 12px; 
-                font-size: 14px;
-            }
-        """
-        if self.theme == "Dark":
-            stylesheet = stylesheet.replace("#f5f6f5", "#1c2526").replace("#ffffff", "#2e2f30").replace("#f0f0f0", "#3a3b3c").replace("#d8d9d8", "#4a4b4c").replace("#c8c9c8", "#5a5b5c").replace("#2a2b2e", "#1c2526").replace("#ff6b00", "#ff8c00")
-        self.setStyleSheet(stylesheet)
-        self.sidebar.setStyleSheet("QPushButton { background: transparent; color: #ffffff; padding: 14px; text-align: left; font-size: 14px; } QPushButton:hover { background: #ff6b00; }")
+        qss_path = os.path.join(os.path.dirname(__file__), "style.qss")
+        if os.path.exists(qss_path):
+            self.setStyleSheet(load_stylesheet(qss_path))
 
     def add_new_tab(self, qurl=None, label="New Tab", group_id=None):
         if qurl is None:
@@ -290,7 +207,6 @@ class SavaBrowser(QMainWindow):
         browser.urlChanged.connect(lambda qurl, b=browser: self.update_url_bar(qurl, b))
         browser.titleChanged.connect(lambda title, b=browser: self.update_tab_title(title, b))
         browser.loadFinished.connect(lambda ok, qurl=qurl, b=browser: self.log_history(qurl, b))
-        # POPRAWKA TUTAJ:
         browser.page().profile().downloadRequested.connect(self.handle_download)
         i = self.tabs.addTab(browser, label)
         if group_id:
@@ -299,7 +215,7 @@ class SavaBrowser(QMainWindow):
         self.tabs.setCurrentIndex(i)
         anim = QPropertyAnimation(self.tabs.widget(i), b"geometry")
         anim.setDuration(200)
-        anim.setStartValue(self.tabs.geometry().adjusted(0, 50, 0, 0))
+        anim.setStartValue(self.tabs.geometry().adjusted(0, 30, 0, 0))
         anim.setEndValue(self.tabs.geometry())
         anim.setEasingCurve(QEasingCurve.InOutQuad)
         anim.start()
@@ -459,13 +375,6 @@ class SavaBrowser(QMainWindow):
         save_btn.clicked.connect(lambda: self.create_web_panel(url_input.text(), dialog))
         layout.addWidget(save_btn)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QLabel { font-size: 14px; color: #333; }
-            QLineEdit { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-            QPushButton { background-color: #ff6b00; color: white; padding: 12px; border-radius: 8px; }
-            QPushButton:hover { background-color: #e55f00; }
-        """)
         dialog.exec_()
 
     def create_web_panel(self, url, dialog):
@@ -502,18 +411,13 @@ class SavaBrowser(QMainWindow):
         layout.addWidget(QLabel("Select Tabs:"))
         layout.addWidget(tabs_list)
         save_btn = QPushButton("Create Group")
-        save_btn.clicked.connect(lambda: self.create_tab_group(name_input.text(), [i for i in range(self.tabs.count()) if tabs_list.item(i) and tabs_list.item(i).isSelected()], dialog))
+        save_btn.clicked.connect(lambda: self.create_tab_group(
+            name_input.text(),
+            [i for i in range(self.tabs.count()) if tabs_list.item(i) and tabs_list.item(i).isSelected()],
+            dialog
+        ))
         layout.addWidget(save_btn)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QLabel { font-size: 14px; color: #333; }
-            QLineEdit { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-            QListWidget { font-size: 13px; padding: 10px; }
-            QListWidget::item:hover { background: #ffe5cc; }
-            QPushButton { background-color: #ff6b00; color: white; padding: 12px; border-radius: 8px; }
-            QPushButton:hover { background-color: #e55f00; }
-        """)
         dialog.exec_()
 
     def create_tab_group(self, group_name, selected_indices, dialog):
@@ -540,13 +444,6 @@ class SavaBrowser(QMainWindow):
         save_session_btn.clicked.connect(self.save_current_session)
         layout.addWidget(save_session_btn)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QListWidget { font-size: 13px; color: #333; padding: 10px; }
-            QListWidget::item:hover { background: #ffe5cc; cursor: pointer; }
-            QPushButton { background-color: #ff6b00; color: white; padding: 12px; border-radius: 8px; }
-            QPushButton:hover { background-color: #e55f00; }
-        """)
         dialog.exec_()
 
     def save_current_session(self):
@@ -592,23 +489,6 @@ class SavaBrowser(QMainWindow):
         submit_btn.clicked.connect(lambda: response_label.setText(self.ai.process_query(query_input.text())))
         layout.addWidget(submit_btn)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QLabel { font-size: 14px; color: #333; margin-top: 10px; }
-            QLineEdit { 
-                padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #f9f9f9;
-            }
-            QLineEdit:focus { border: 1px solid #ff6b00; box-shadow: 0 0 6px rgba(255, 107, 0, 0.5); }
-            QComboBox { 
-                padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #f9f9f9;
-            }
-            QComboBox:focus { border: 1px solid #ff6b00; }
-            QPushButton { 
-                background-color: #ff6b00; color: white; padding: 12px; border-radius: 8px; font-size: 14px;
-                transition: background-color 0.3s, transform 0.1s;
-            }
-            QPushButton:hover { background-color: #e55f00; transform: scale(1.02); }
-        """)
         dialog.exec_()
 
     def show_ai_response(self, response):
@@ -620,10 +500,6 @@ class SavaBrowser(QMainWindow):
         response_label.setWordWrap(True)
         layout.addWidget(response_label)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QLabel { font-size: 14px; color: #333; padding: 15px; }
-        """)
         dialog.exec_()
 
     def show_history(self):
@@ -637,11 +513,6 @@ class SavaBrowser(QMainWindow):
         history_list.itemClicked.connect(lambda item: self.add_new_tab(QUrl(item.text().split(" ")[-1].strip("()"))))
         layout.addWidget(history_list)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QListWidget { font-size: 13px; color: #333; padding: 10px; }
-            QListWidget::item:hover { background: #ffe5cc; cursor: pointer; }
-        """)
         dialog.exec_()
 
     def show_downloads(self):
@@ -654,11 +525,6 @@ class SavaBrowser(QMainWindow):
             downloads_list.addItem(f"{entry['timestamp']} - {os.path.basename(entry['path'])} ({entry['url']})")
         layout.addWidget(downloads_list)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QListWidget { font-size: 13px; color: #333; padding: 10px; }
-            QListWidget::item:hover { background: #ffe5cc; }
-        """)
         dialog.exec_()
 
     def show_tab_overview(self):
@@ -680,11 +546,6 @@ class SavaBrowser(QMainWindow):
             layout.addWidget(thumbnail, i // 3, (i % 3) * 2)
             layout.addWidget(title_label, i // 3, (i % 3) * 2 + 1)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QLabel { font-size: 13px; color: #333; padding: 10px; }
-            QLabel:hover { background: #ffe5cc; }
-        """)
         dialog.exec_()
 
     def show_privacy_dashboard(self):
@@ -698,10 +559,6 @@ class SavaBrowser(QMainWindow):
         layout.addWidget(QLabel(f"Ad Blocking: {'Enabled' if self.ad_block_enabled else 'Disabled'}"))
         layout.addWidget(QLabel("<b>Tip:</b> Enable ad-blocking for enhanced privacy."))
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QLabel { font-size: 14px; color: #333; padding: 10px; }
-        """)
         dialog.exec_()
 
     def open_settings(self):
@@ -710,7 +567,7 @@ class SavaBrowser(QMainWindow):
         dialog.setMinimumSize(600, 400)
         layout = QFormLayout()
         theme_combo = QComboBox()
-        theme_combo.addItems(["Vivaldi", "Dark"])
+        theme_combo.addItems(["Light", "Dark"])
         theme_combo.setCurrentText(self.theme)
         theme_combo.currentTextChanged.connect(lambda theme: setattr(self, "theme", theme))
         layout.addRow("Theme:", theme_combo)
@@ -726,24 +583,20 @@ class SavaBrowser(QMainWindow):
         homepage_input.setText(self.settings.value("homepage", "file:///" + os.path.abspath(os.path.join("assets", "welcome.html"))))
         layout.addRow("Homepage:", homepage_input)
         save_btn = QPushButton("Save")
-        save_btn.clicked.connect(lambda: [self.settings.setValue("theme", self.theme), self.settings.setValue("ad_block_enabled", self.ad_block_enabled), self.settings.setValue("homepage", homepage_input.text()), self.apply_theme(), dialog.accept()])
+        save_btn.clicked.connect(lambda: [
+            self.settings.setValue("theme", self.theme),
+            self.settings.setValue("ad_block_enabled", self.ad_block_enabled),
+            self.settings.setValue("homepage", homepage_input.text()),
+            self.apply_theme(),
+            dialog.accept()
+        ])
         layout.addRow(save_btn)
         dialog.setLayout(layout)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #ffffff; border-radius: 12px; padding: 15px; }
-            QLabel { font-size: 14px; color: #333; }
-            QComboBox { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-            QComboBox:focus { border: 1px solid #ff6b00; }
-            QCheckBox { padding: 10px; font-size: 14px; }
-            QLineEdit { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-            QPushButton { background-color: #ff6b00; color: white; padding: 12px; border-radius: 8px; }
-            QPushButton:hover { background-color: #e55f00; }
-        """)
         dialog.exec_()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    app.setFont(QFont("Roboto", 11))
+    app.setFont(QFont("Segoe UI", 11))
     app.setStyle("Fusion")
     browser = SavaBrowser()
     browser.showMaximized()
