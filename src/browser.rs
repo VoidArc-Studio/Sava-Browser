@@ -4,7 +4,7 @@ use rand::seq::SliceRandom;
 use crate::{bookmarks::BookmarkManager, history::HistoryManager, settings::Settings};
 
 pub struct Browser {
-    webviews: Vec<WebView>,
+    webviews: Vec<Option<WebView>>,
     tabs: Vec<String>,
     current_tab: usize,
     incognito: bool,
@@ -35,22 +35,18 @@ impl Browser {
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
         ];
         let user_agent = user_agents.choose(&mut rand::thread_rng()).unwrap();
-
-        let webview_builder = WebViewBuilder::new(&self.window).expect("Failed to create WebViewBuilder");
+        let webview_builder = WebViewBuilder::new(self.window.clone()).expect("Failed to create WebViewBuilder");
         let webview = webview_builder
             .with_url(&url)
             .expect("Invalid URL")
             .with_user_agent(user_agent)
-            .with_incognito(self.incognito)
-            .with_javascript_enabled(!self.settings.block_javascript)
-            .with_webgl_enabled(!self.settings.block_fingerprinting)
             .build()
             .expect("Failed to build webview");
 
         if self.webviews.len() <= self.current_tab {
-            self.webviews.push(webview);
+            self.webviews.push(Some(webview));
         } else {
-            self.webviews[self.current_tab] = webview;
+            self.webviews[self.current_tab] = Some(webview);
         }
         self.tabs[self.current_tab] = url.clone();
         if !self.incognito {
@@ -60,16 +56,13 @@ impl Browser {
 
     pub fn new_tab(&mut self) {
         self.tabs.push(self.settings.homepage.clone());
-        let webview_builder = WebViewBuilder::new(&self.window).expect("Failed to create WebViewBuilder");
+        let webview_builder = WebViewBuilder::new(self.window.clone()).expect("Failed to create WebViewBuilder");
         let webview = webview_builder
             .with_url(&self.settings.homepage)
             .expect("Invalid homepage URL")
-            .with_incognito(self.incognito)
-            .with_javascript_enabled(!self.settings.block_javascript)
-            .with_webgl_enabled(!self.settings.block_fingerprinting)
             .build()
             .expect("Failed to build webview");
-        self.webviews.push(webview);
+        self.webviews.push(Some(webview));
         self.current_tab = self.tabs.len() - 1;
     }
 
