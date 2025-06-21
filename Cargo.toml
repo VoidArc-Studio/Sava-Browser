@@ -4,18 +4,26 @@ version = "0.3.0"
 edition = "2021"
 
 [dependencies]
-slint = "1.8"                              # GUI
-wry = "0.24"                               # WebView
-reqwest = { version = "0.12", features = ["json", "blocking"] } # HTTP client
-serde = { version = "1.0", features = ["derive"] }              # Serializacja
-serde_json = "1.0"                         # JSON
-tokio = { version = "1.40", features = ["full"] }               # Async runtime
-url = "2.5"                                # Parsowanie URL
-webbrowser = "0.8"                         # Otwieranie linków
-keyring = "2.0"                            # Szyfrowane hasła
-rand = "0.8"                               # Losowe User-Agent
-oauth2 = "4.4"                             # Autoryzacja OAuth
-aes-gcm = { version = "0.10", features = ["std"] }              # Szyfrowanie danych
-wasm-bindgen = "0.2"                       # Obsługa WebAssembly
-chrono = "0.4"                             # Czas
-urlencoding = "2.1"                        # Kodowanie URL (dodaj, jeśli używasz urlencoding::encode)
+slint = "1.6"
+wry = "0.24"
+aes-gcm = { version = "0.10", features = ["aes"] }
+keyring = "2.3"
+base64 = "0.21"
+rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1.38", features = ["full"] }
+
+# Jeśli korzystasz z oauth2, wasm, lub innych bibliotek, odkomentuj i dostosuj wersje:
+# oauth2 = "4.4"
+# wasm-bindgen = "0.2"
+
+[build-dependencies]
+# Slint wymaga build.rs, ale nie potrzebuje tu dodatkowych zależności.
+
+[profile.release]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1
