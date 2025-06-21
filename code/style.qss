@@ -1,0 +1,99 @@
+/* Główny styl okna */
+QMainWindow {
+    background-color: #f6f7fb;
+}
+
+/* Dock i sidebar */
+QDockWidget {
+    background-color: #23272e;
+    color: #fff;
+}
+QDockWidget::title {
+    background: #23272e;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Pasek narzędzi */
+QToolBar {
+    background: #fff;
+    border: none;
+    padding: 7px;
+}
+
+/* Pasek adresu */
+QLineEdit {
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    background: #fafbfc;
+    font-size: 14px;
+}
+QLineEdit:focus {
+    border: 1.5px solid #2e90fa;
+    background: #fff;
+}
+
+/* Przyciski */
+QPushButton {
+    background: #f4f5f7;
+    border: 1px solid #d0d3d6;
+    border-radius: 8px;
+    color: #23272e;
+    padding: 8px 14px;
+    font-size: 14px;
+    min-width: 60px;
+}
+QPushButton:hover {
+    background: #2e90fa;
+    color: #fff;
+    border: 1.5px solid #2e90fa;
+}
+
+/* Karty */
+QTabWidget::pane {
+    border: none;
+    background: #fff;
+}
+QTabBar::tab {
+    background: #f5f6fa;
+    color: #23272e;
+    padding: 10px 21px;
+    border-radius: 8px 8px 0 0;
+    font-size: 14px;
+    margin-right: 2px;
+    border: 1px solid #e0e0e0;
+    border-bottom: none;
+}
+QTabBar::tab:selected {
+    background: #fff;
+    color: #1e6ccd;
+    border: 1.5px solid #1e6ccd;
+    border-bottom: none;
+}
+QTabBar::tab:hover {
+    background: #e4e9f7;
+    color: #1e6ccd;
+}
+
+/* Pole tekstowe */
+QTextEdit {
+    background: #fafbfc;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #23272e;
+}
+
+/* Listy */
+QListWidget {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+/* Opisy */
+QLabel {
+    color: #23272e;
+}
