@@ -1,13 +1,13 @@
 slint::include_modules!();
 
-pub struct AppWindow {
-    ui: slint::Window,
+pub struct AppWindowWrapper {
+    ui: AppWindow, // AppWindow - to typ z .slint!
 }
 
-impl AppWindow {
+impl AppWindowWrapper {
     pub fn new() -> Result<Self, slint::PlatformError> {
-        let ui = AppWindow::new()?;
-        Ok(AppWindow { ui })
+        let ui = AppWindow::new()?; // lub np. AppWindow::from_file(...) jeśli chcesz z pliku
+        Ok(AppWindowWrapper { ui })
     }
 
     pub fn run(&self) -> Result<(), slint::PlatformError> {
@@ -48,5 +48,9 @@ impl AppWindow {
 
     pub fn on_save_settings<F: Fn(String, String, bool, bool) + 'static>(&self, callback: F) {
         self.ui.on_save_settings(callback);
+    }
+
+    pub fn instance(&self) -> &AppWindow {
+        &self.ui
     }
 }
