@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Sava Browser</title>
+    <title>Witaj w Sava Browser</title>
     <link rel="stylesheet" href="welcome.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
@@ -13,24 +14,66 @@
             <img src="sava_icon.png" alt="Sava Browser Logo">
             <h1>Sava Browser</h1>
         </div>
-        <p>Blazing fast, customizable, and powered by Sava AI.</p>
+        <p>Szybka, konfigurowalna i napędzana przez Sava AI.</p>
         <div class="search-bar">
-            <input type="text" placeholder="Search with Startpage or type 'sava:query' for AI" id="searchInput">
-            <button onclick="navigate()">Search</button>
+            <input type="text" placeholder="Szukaj w Startpage lub wpisz 'sava:zapytanie' dla AI" id="searchInput">
+            <button onclick="navigate()">Szukaj</button>
         </div>
-        <div class="quick-links">
-            <a href="https://www.startpage.com">Startpage</a>
-            <a href="https://www.github.com">GitHub</a>
-            <a href="https://www.wikipedia.org">Wikipedia</a>
-            <a href="https://news.ycombinator.com">Hacker News</a>
-            <a href="https://www.reddit.com">Reddit</a>
-            <a href="https://www.stackoverflow.com">Stack Overflow</a>
+        <div class="speed-dial">
+            <h2>Szybki Dostęp</h2>
+            <div class="speed-dial-grid" id="speedDialGrid"></div>
+            <button onclick="addSpeedDial()">Dodaj Skrót</button>
         </div>
         <div class="ai-prompt">
-            <p>Try Sava AI: Type <code>sava:your query</code> or click <span class="emoji">🤖</span> in the toolbar!</p>
+            <p>Wypróbuj Sava AI: Wpisz <code>sava:twoje zapytanie</code> lub kliknij <span class="emoji">🤖</span> na pasku narzędzi!</p>
         </div>
     </div>
     <script>
+        let speedDial = [];
+        loadSpeedDial();
+
+        function loadSpeedDial() {
+            fetch('code/speed_dial.json').then(response => response.json()).then(data => {
+                speedDial = data;
+                renderSpeedDial();
+            }).catch(() => renderSpeedDial());
+        }
+
+        function renderSpeedDial() {
+            const grid = document.getElementById('speedDialGrid');
+            grid.innerHTML = '';
+            speedDial.forEach((item, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'speed-dial-tile';
+                tile.innerHTML = `<a href="${item.url}">${item.title}</a><span class="remove" onclick="removeSpeedDial(${index})">✖</span>`;
+                grid.appendChild(tile);
+            });
+        }
+
+        function addSpeedDial() {
+            const title = prompt('Podaj tytuł skrótu:');
+            const url = prompt('Podaj URL:');
+            if (title && url) {
+                speedDial.push({title, url});
+                saveSpeedDial();
+                renderSpeedDial();
+            }
+        }
+
+        function removeSpeedDial(index) {
+            speedDial.splice(index, 1);
+            saveSpeedDial();
+            renderSpeedDial();
+        }
+
+        function saveSpeedDial() {
+            fetch('code/speed_dial.json', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(speedDial)
+            }).catch(error => console.error('Error saving speed dial:', error));
+        }
+
         function navigate() {
             const input = document.getElementById('searchInput').value.trim();
             if (input) {
@@ -43,11 +86,11 @@
                 }
             }
         }
+
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                navigate();
-            }
+            if (e.key === 'Enter') navigate();
         });
     </script>
 </body>
 </html>
+```
