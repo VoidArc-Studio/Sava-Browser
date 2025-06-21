@@ -1,4 +1,3 @@
-```python
 import sys
 import os
 import json
@@ -666,4 +665,3 @@ if __name__ == '__main__':
     browser = SavaBrowser()
     browser.showMaximized()
     sys.exit(app.exec_())
-```
