@@ -1,4 +1,5 @@
-use wry::webview::{WebViewBuilder, WebView};
+use wry::application::window::Window;
+use wry::webview::{WebView, WebViewBuilder};
 use rand::seq::SliceRandom;
 use crate::{bookmarks::BookmarkManager, history::HistoryManager, settings::Settings};
 
@@ -10,12 +11,11 @@ pub struct Browser {
     bookmarks: BookmarkManager,
     history: HistoryManager,
     settings: Settings,
+    window: Window,
 }
 
 impl Browser {
-    pub fn new() -> Self {
-        // Uwaga: Tworzenie WebView wymaga Window (z Wry/Tao), więc poniższy kod jest przykładowy.
-        // W praktyce musisz przekazać Window do WebViewBuilder::new(window)
+    pub fn new(window: Window) -> Self {
         Browser {
             webviews: Vec::new(),
             tabs: vec!["https://startpage.com".to_string()],
@@ -24,12 +24,11 @@ impl Browser {
             bookmarks: BookmarkManager::new(),
             history: HistoryManager::new(),
             settings: Settings::load(),
+            window,
         }
     }
 
-    pub fn navigate(&mut self, url: String, window: wry::application::window::Window) {
-        // Możesz dodać tu własny prosty blok reklam/domen
-
+    pub fn navigate(&mut self, url: String) {
         let user_agents = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Mozilla/5.0 (Macintosh; Intel Mac OS X10_15_7) AppleWebKit/537.36",
@@ -37,8 +36,10 @@ impl Browser {
         ];
         let user_agent = user_agents.choose(&mut rand::thread_rng()).unwrap();
 
-        let webview = WebViewBuilder::new(window)
+        let webview_builder = WebViewBuilder::new(&self.window).expect("Failed to create WebViewBuilder");
+        let webview = webview_builder
             .with_url(&url)
+            .expect("Invalid URL")
             .with_user_agent(user_agent)
             .with_incognito(self.incognito)
             .with_javascript_enabled(!self.settings.block_javascript)
@@ -57,11 +58,12 @@ impl Browser {
         }
     }
 
-    pub fn new_tab(&mut self, window: wry::application::window::Window) {
+    pub fn new_tab(&mut self) {
         self.tabs.push(self.settings.homepage.clone());
-        // Przy dodawaniu nowej karty przekazuj Window!
-        let webview = WebViewBuilder::new(window)
+        let webview_builder = WebViewBuilder::new(&self.window).expect("Failed to create WebViewBuilder");
+        let webview = webview_builder
             .with_url(&self.settings.homepage)
+            .expect("Invalid homepage URL")
             .with_incognito(self.incognito)
             .with_javascript_enabled(!self.settings.block_javascript)
             .with_webgl_enabled(!self.settings.block_fingerprinting)
@@ -79,22 +81,21 @@ impl Browser {
         }
     }
 
-    pub fn switch_tab(&mut self, index: usize, window: wry::application::window::Window) {
+    pub fn switch_tab(&mut self, index: usize) {
         if index < self.tabs.len() {
             self.current_tab = index;
-            // Odśwież webview dla nowej karty
             let url = self.tabs[self.current_tab].clone();
-            self.navigate(url, window);
+            self.navigate(url);
         }
     }
 
-    pub fn toggle_incognito(&mut self, window: wry::application::window::Window) {
+    pub fn toggle_incognito(&mut self) {
         self.incognito = !self.incognito;
         if self.incognito {
             self.webviews.clear();
             self.tabs = vec![self.settings.homepage.clone()];
             self.current_tab = 0;
-            self.navigate(self.tabs[0].clone(), window);
+            self.navigate(self.tabs[0].clone());
         }
         println!("Incognito mode: {}", self.incognito);
     }
