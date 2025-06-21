@@ -1,16 +1,18 @@
 from PyQt5.QtWidgets import (
     QDockWidget, QWidget, QVBoxLayout, QToolBar, QAction, QMenu, QLineEdit, QPushButton,
-    QTabWidget, QTextEdit, QFrame, QFileDialog, QWebEngineView, QWebEngineProfile, QWebEnginePage,
-    QDialog, QFormLayout, QComboBox, QCheckBox, QLabel, QListWidget, QGridLayout, QInputDialog
+    QTabWidget, QTextEdit, QFrame, QFileDialog, QDialog, QFormLayout, QComboBox, QCheckBox,
+    QLabel, QListWidget, QGridLayout, QInputDialog
 )
-from PyQt5.QtWebEngineWidgets import QWebEngineDownloadItem
+from PyQt5.QtWebEngineWidgets import (
+    QWebEngineView, QWebEngineProfile, QWebEnginePage, QWebEngineDownloadItem
+)
 from PyQt5.QtCore import QUrl, Qt, QPropertyAnimation, QEasingCurve, QSize
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPixmap
 import os
 import uuid
 import datetime
-from .sava_ai import SavaAI
-from .ad_block_page import AdBlockingWebEnginePage
+from sava_ai import SavaAI
+from ad_block_page import AdBlockingWebEnginePage
 
 class SavaUI:
     def __init__(self, parent):
@@ -114,7 +116,7 @@ class SavaUI:
         self.tab_group_btn.triggered.connect(self.group_tabs)
         self.toolbar.addAction(self.tab_group_btn)
         self.settings_btn = QAction(QIcon.fromTheme("preferences-system", QIcon(":/icons/preferences-system.png")), "Ustawienia", self.parent)
-        self.settings_btn.triggered.connect(self.parent.open_settings)
+        self.settings_btn.triggered.connect(self.parent_open_settings)
         self.toolbar.addAction(self.settings_btn)
 
         # Menu
