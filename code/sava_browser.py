@@ -290,7 +290,8 @@ class SavaBrowser(QMainWindow):
         browser.urlChanged.connect(lambda qurl, b=browser: self.update_url_bar(qurl, b))
         browser.titleChanged.connect(lambda title, b=browser: self.update_tab_title(title, b))
         browser.loadFinished.connect(lambda ok, qurl=qurl, b=browser: self.log_history(qurl, b))
-        browser.profile().downloadRequested.connect(self.handle_download)
+        # POPRAWKA TUTAJ:
+        browser.page().profile().downloadRequested.connect(self.handle_download)
         i = self.tabs.addTab(browser, label)
         if group_id:
             self.tab_groups.setdefault(group_id, []).append(i)
