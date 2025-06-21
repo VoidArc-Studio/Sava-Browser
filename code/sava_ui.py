@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QDockWidget, QWidget, QVBoxLayout, QToolBar, QAction, QMenu, QLineEdit, QPushButton,
     QTabWidget, QTextEdit, QFrame, QFileDialog, QDialog, QFormLayout, QComboBox, QCheckBox,
-    QLabel, QListWidget, QGridLayout, QInputDialog
+    QLabel, QListWidget, QGridLayout, QInputDialog, QMessageBox
 )
 from PyQt5.QtWebEngineWidgets import (
     QWebEngineView, QWebEngineProfile, QWebEnginePage, QWebEngineDownloadItem
@@ -11,7 +11,8 @@ from PyQt5.QtGui import QIcon, QFont, QCursor, QPixmap
 import os
 import uuid
 import datetime
-# from sava_ai import SavaAI   # ZAKOMENTUJ LUB USUŃ
+
+from sava_ai import SavaAI
 from ad_block_page import AdBlockingWebEnginePage
 
 class SavaUI:
@@ -23,10 +24,14 @@ class SavaUI:
         self.tab_groups = {}
         self.web_panel_widgets = []
         self.search_history = []
+        self.bookmarks = parent.bookmarks
+        self.web_panels = parent.web_panels
+        self.downloads = parent.downloads
+        self.history = parent.history
+        self.notes = parent.notes
 
     def setup_ui(self):
-        """Set up the user interface components."""
-        # Sidebar
+        # Sidebar setup (jak wcześniej)
         self.sidebar = QDockWidget()
         self.sidebar.setFixedWidth(250)
         self.sidebar.setFeatures(QDockWidget.DockWidgetMovable)
@@ -57,7 +62,7 @@ class SavaUI:
         self.notes_widget.hide()
         sidebar_layout.addWidget(self.notes_widget)
 
-        for panel in self.parent.web_panels:
+        for panel in self.web_panels:
             self.create_web_panel_widget(panel["url"], panel["title"])
 
         # Main layout
@@ -73,16 +78,16 @@ class SavaUI:
         self.main_layout.addWidget(self.toolbar)
 
         # Navigation buttons
-        self.back_btn = QAction(QIcon.fromTheme("go-previous", QIcon(":/icons/go-previous.png")), "Wstecz", self.parent)
+        self.back_btn = QAction(QIcon.fromTheme("go-previous"), "Wstecz", self.parent)
         self.back_btn.triggered.connect(self.navigate_back)
         self.toolbar.addAction(self.back_btn)
-        self.forward_btn = QAction(QIcon.fromTheme("go-next", QIcon(":/icons/go-next.png")), "Dalej", self.parent)
+        self.forward_btn = QAction(QIcon.fromTheme("go-next"), "Dalej", self.parent)
         self.forward_btn.triggered.connect(self.navigate_forward)
         self.toolbar.addAction(self.forward_btn)
-        self.reload_btn = QAction(QIcon.fromTheme("view-refresh", QIcon(":/icons/view-refresh.png")), "Odśwież", self.parent)
+        self.reload_btn = QAction(QIcon.fromTheme("view-refresh"), "Odśwież", self.parent)
         self.reload_btn.triggered.connect(self.reload_page)
         self.toolbar.addAction(self.reload_btn)
-        self.home_btn = QAction(QIcon.fromTheme("go-home", QIcon(":/icons/go-home.png")), "Home", self.parent)
+        self.home_btn = QAction(QIcon.fromTheme("go-home"), "Home", self.parent)
         self.home_btn.triggered.connect(lambda: self.add_new_tab(QUrl(self.parent.settings.value("homepage", "https://www.startpage.com"))))
         self.toolbar.addAction(self.home_btn)
         self.toolbar.addSeparator()
@@ -100,22 +105,22 @@ class SavaUI:
         self.search_suggestion.itemClicked.connect(self.select_suggestion)
         self.toolbar.addWidget(self.search_suggestion)
 
-        self.search_btn = QPushButton(QIcon.fromTheme("system-search", QIcon(":/icons/system-search.png")), "")
+        self.search_btn = QPushButton(QIcon.fromTheme("system-search"), "")
         self.search_btn.clicked.connect(self.navigate_to_url)
         self.toolbar.addWidget(self.search_btn)
         self.toolbar.addSeparator()
 
         # Additional buttons
-        self.ai_btn = QAction(QIcon.fromTheme("system-search", QIcon(":/icons/system-search.png")), "Sava AI", self.parent)
+        self.ai_btn = QAction(QIcon.fromTheme("system-search"), "Sava AI", self.parent)
         self.ai_btn.triggered.connect(self.open_ai_dialog)
         self.toolbar.addAction(self.ai_btn)
-        self.bookmark_btn = QAction(QIcon.fromTheme("bookmark-new", QIcon(":/icons/bookmark-new.png")), "Zakładka", self.parent)
+        self.bookmark_btn = QAction(QIcon.fromTheme("bookmark-new"), "Zakładka", self.parent)
         self.bookmark_btn.triggered.connect(self.add_bookmark)
         self.toolbar.addAction(self.bookmark_btn)
-        self.tab_group_btn = QAction(QIcon.fromTheme("folder-new", QIcon(":/icons/folder-new.png")), "Grupuj Karty", self.parent)
+        self.tab_group_btn = QAction(QIcon.fromTheme("folder-new"), "Grupuj Karty", self.parent)
         self.tab_group_btn.triggered.connect(self.group_tabs)
         self.toolbar.addAction(self.tab_group_btn)
-        self.settings_btn = QAction(QIcon.fromTheme("preferences-system", QIcon(":/icons/preferences-system.png")), "Ustawienia", self.parent)
+        self.settings_btn = QAction(QIcon.fromTheme("preferences-system"), "Ustawienia", self.parent)
         self.settings_btn.triggered.connect(self.parent_open_settings)
         self.toolbar.addAction(self.settings_btn)
 
@@ -128,7 +133,7 @@ class SavaUI:
         self.menu.addAction(self.new_tab_action)
         self.menu.addMenu(self.bookmarks_menu)
         self.menu.addAction(self.settings_btn)
-        self.menu_btn = QPushButton(QIcon.fromTheme("application-menu", QIcon(":/icons/application-menu.png")), "")
+        self.menu_btn = QPushButton(QIcon.fromTheme("application-menu"), "")
         self.menu_btn.setMenu(self.menu)
         self.toolbar.addWidget(self.menu_btn)
 
@@ -142,7 +147,6 @@ class SavaUI:
         self.tabs.setMovable(True)
         self.tabs.tabCloseRequested.connect(self.close_tab)
         self.tabs.currentChanged.connect(self.update_url_bar)
-        self.tabs.tabBar().setTabButton(0, QTabBar.RightSide, None)  # Disable close on first tab
         self.main_layout.addWidget(self.tabs)
 
     def create_button(self, text, slot):
@@ -438,31 +442,45 @@ class SavaUI:
         """)
         return dialog
 
-    def open_ai_dialog(self):
-        """Open Sava AI dialog."""
-        dialog = self.create_dialog("Asystent Sava AI", 700, 500)
-        layout = QVBoxLayout()
+ def open_ai_dialog(self):
+        """Wyświetl okno dialogowe dla Sava AI."""
+        dialog = QDialog(self.parent)
+        dialog.setWindowTitle("Asystent Sava AI")
+        dialog.setMinimumSize(700, 500)
+        layout = QVBoxLayout(dialog)
+
+        # Tryby AI
         mode_combo = QComboBox()
         mode_combo.addItems(self.ai.modes)
         mode_combo.setCurrentText(self.ai.current_mode)
         mode_combo.currentTextChanged.connect(lambda mode: setattr(self.ai, "current_mode", mode))
-        layout.addWidget(QLabel("Wybierz Tryb:"))
+        layout.addWidget(QLabel("Wybierz tryb:"))
         layout.addWidget(mode_combo)
+
+        # Pole zapytania i odpowiedź
         query_input = QLineEdit()
-        query_input.setPlaceholderText("Zapytaj Sava AI (np. 'sava:napisz skrypt Python' lub 'sava:szukaj trendów AI')")
+        query_input.setPlaceholderText("Zapytaj Sava AI...")
         layout.addWidget(QLabel("Zapytanie:"))
         layout.addWidget(query_input)
-        response_label = QLabel("Sava AI odpowie tutaj.")
+        response_label = QLabel("Odpowiedź pojawi się tutaj.")
         response_label.setWordWrap(True)
         response_label.setMinimumHeight(200)
         layout.addWidget(QLabel("Odpowiedź:"))
         layout.addWidget(response_label)
+
+        def send_query():
+            query = query_input.text()
+            if query:
+                response_label.setText(self.ai.process_query(query))
+            else:
+                response_label.setText("Podaj zapytanie.")
+
         submit_btn = QPushButton("Wyślij Zapytanie")
-        submit_btn.clicked.connect(lambda: response_label.setText(self.ai.process_query(query_input.text())))
+        submit_btn.clicked.connect(send_query)
         layout.addWidget(submit_btn)
+
         dialog.setLayout(layout)
         dialog.exec_()
-
     def show_ai_response(self, response):
         """Show Sava AI response in a dialog."""
         dialog = self.create_dialog("Odpowiedź Sava AI", 700, 400)
