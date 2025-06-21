@@ -3,7 +3,7 @@ import os
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt5.QtCore import QUrl, QSettings, Qt
-from .sava_ui import SavaUI
+from sava_ui import SavaUI  # Changed from relative to absolute import
 
 def load_stylesheet(path):
     """Load QSS stylesheet from file."""
