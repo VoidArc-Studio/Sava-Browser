@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Sava Browser</title>
+    <link rel="stylesheet" href="welcome.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="sava_icon.png" alt="Sava Browser Logo">
+            <h1>Sava Browser</h1>
+        </div>
+        <p>Blazing fast, customizable, and powered by Sava AI.</p>
+        <div class="search-bar">
+            <input type="text" placeholder="Search with Startpage or type 'sava:query' for AI" id="searchInput">
+            <button onclick="navigate()">Search</button>
+        </div>
+        <div class="quick-links">
+            <a href="https://www.startpage.com">Startpage</a>
+            <a href="https://www.github.com">GitHub</a>
+            <a href="https://www.wikipedia.org">Wikipedia</a>
+            <a href="https://news.ycombinator.com">Hacker News</a>
+            <a href="https://www.reddit.com">Reddit</a>
+            <a href="https://www.stackoverflow.com">Stack Overflow</a>
+        </div>
+        <div class="ai-prompt">
+            <p>Try Sava AI: Type <code>sava:your query</code> or click <span class="emoji">🤖</span> in the toolbar!</p>
+        </div>
+    </div>
+    <script>
+        function navigate() {
+            const input = document.getElementById('searchInput').value.trim();
+            if (input) {
+                if (input.startsWith('sava:')) {
+                    window.location.href = input;
+                } else if (input.includes('.') && !input.includes(' ')) {
+                    window.location.href = `https://${input}`;
+                } else {
+                    window.location.href = `https://www.startpage.com/search?q=${encodeURIComponent(input)}`;
+                }
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                navigate();
+            }
+        });
+    </script>
+</body>
+</html>
