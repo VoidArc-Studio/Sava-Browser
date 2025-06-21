@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{self, Write};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Settings {
     pub theme: String,
     pub homepage: String,
@@ -20,7 +20,6 @@ impl Settings {
                 return settings;
             }
         }
-        // Domyślne ustawienia, jeśli plik nie istnieje lub niepoprawny
         Settings {
             theme: "dark".to_string(),
             homepage: "https://startpage.com".to_string(),
