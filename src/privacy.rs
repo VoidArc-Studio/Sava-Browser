@@ -12,16 +12,18 @@ pub struct PrivacyManager {
 impl PrivacyManager {
     pub fn new() -> Self {
         let keyring = Entry::new("sava-browser", "user").expect("Failed to initialize keyring");
-        // Próbuj pobrać klucz z keyring, jeśli nie ma - generuj i zapisz
+        // Spróbuj pobrać klucz z keyring; jeśli nie istnieje, wygeneruj nowy i zapisz
         let encryption_key = match keyring.get_password() {
             Ok(stored) => {
-                let key_bytes = general_purpose::STANDARD.decode(stored).expect("Failed to decode key from keyring");
+                let key_bytes = general_purpose::STANDARD
+                    .decode(stored)
+                    .expect("Failed to decode key from keyring");
                 Key::<Aes256Gcm>::from_slice(&key_bytes).clone()
             }
             Err(_) => {
                 let mut key_bytes = [0u8; 32];
                 rand::thread_rng().fill_bytes(&mut key_bytes);
-                // Zapisz klucz do keyring jako base64
+                // Zapisz klucz do keyring jako base64 (string)
                 let key_b64 = general_purpose::STANDARD.encode(&key_bytes);
                 keyring.set_password(&key_b64).expect("Failed to store key in keyring");
                 Key::<Aes256Gcm>::from_slice(&key_bytes).clone()
@@ -40,7 +42,7 @@ impl PrivacyManager {
     }
 
     pub fn clear_cookies(&self) {
-        // TODO: Wyczyść ciasteczka z WebView
+        // Implementacja czyszczenia cookies powinna być wykonana w WebView (tutaj tylko placeholder)
         println!("Cookies cleared");
     }
 
@@ -61,7 +63,7 @@ impl PrivacyManager {
     }
 
     pub fn block_javascript(&self, _url: &str) -> bool {
-        // TODO: Sprawdź ustawienia dla domeny
+        // Tutaj można dodać logikę na podstawie domeny
         false
     }
 
