@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QDockWidget, QTextEdit, QFrame, QInputDialog
 )
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage, QWebEngineDownloadItem
-from PyQt5.QtCore import QUrl, Qt, QSettings, QPropertyAnimation, QEasingCurve
+from PyQt5.QtCore import QUrl, Qt, QSettings, QPropertyAnimation, QEasingCurve, QSize
 from PyQt5.QtGui import QIcon, QFont, QCursor, QPixmap
 import uuid
 import datetime
@@ -131,7 +131,7 @@ class SavaBrowser(QMainWindow):
         # Toolbar
         self.toolbar = QToolBar()
         self.toolbar.setMovable(False)
-        self.toolbar.setIconSize(Qt.QSize(22, 22))
+        self.toolbar.setIconSize(QSize(22, 22))
         self.main_layout.addWidget(self.toolbar)
 
         # Navigation buttons
