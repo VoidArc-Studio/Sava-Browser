@@ -18,22 +18,18 @@ use wry::application::window::WindowBuilder;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Tworzenie EventLoop i głównego okna Wry
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
         .with_title("Sava Browser")
         .build(&event_loop)
         .expect("Failed to build Window");
 
-    // Inicjalizacja Slint UI
     let ui = AppWindowWrapper::new()?;
     let _ui_handle = ui.as_weak();
 
-    // Inicjalizacja przeglądarki (z Window)
     let browser = Arc::new(Mutex::new(Browser::new(window)));
     let browser_clone = Arc::clone(&browser);
 
-    // Callbacki dla UI
     ui.on_open_url({
         let browser = Arc::clone(&browser_clone);
         move |url| {
@@ -100,7 +96,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
-    // Inicjalizacja asystenta AI
     let ai = ai_assistant::Assistant::new();
     ui.on_ai_request({
         let ai = ai.clone();
@@ -108,7 +103,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let ai = ai.clone();
             tokio::spawn(async move {
                 let response = ai.handle_request(query.to_string(), mode).await;
-                // TODO: Wyświetl w UI
                 println!("Sava AI Response: {}", response);
             });
         }
@@ -130,7 +124,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
-    // Uruchomienie UI
     ui.run()?;
     Ok(())
 }
