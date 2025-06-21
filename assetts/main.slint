@@ -11,6 +11,9 @@ export component AppWindow inherits Window {
         width: 60px;
         height: parent.height;
         background: AppTheme.current-theme.secondary-color;
+        border-radius: AppTheme.current-theme.border-radius;
+        drop-shadow: 0px 2px 5px AppTheme.current-theme.shadow-color;
+
         VerticalLayout {
             spacing: 10px;
             padding: 10px;
@@ -31,6 +34,12 @@ export component AppWindow inherits Window {
                 width: 40px;
                 height: 40px;
                 clicked => { settings_popup.visible = true; }
+            }
+            Image {
+                source: @image-url("icons/plugins.svg");
+                width: 40px;
+                height: 40px;
+                clicked => { plugins_popup.visible = true; }
             }
         }
     }
@@ -56,6 +65,7 @@ export component AppWindow inherits Window {
                 background: AppTheme.current-theme.accent-color;
                 border-radius: AppTheme.current-theme.border-radius;
                 clicked => { root.new_tab(); }
+                mouse-cursor: pointer;
             }
 
             // Dynamiczne karty
@@ -83,7 +93,9 @@ export component AppWindow inherits Window {
                     }
                 }
                 TouchArea {
-                    clicked => { /* TODO: Przełącz kartę */ }
+                    clicked => { root.switch_tab(index); }
+                    mouse-cursor: pointer;
+                    mouse-entered => { background = AppTheme.current-theme.hover-color; }
                 }
             }
 
@@ -118,6 +130,7 @@ export component AppWindow inherits Window {
                     background: AppTheme.current-theme.accent-color;
                     border-radius: AppTheme.current-theme.border-radius;
                     clicked => { ai_popup.visible = true; }
+                    mouse-cursor: pointer;
                 }
                 Button {
                     text: "Incognito";
@@ -126,6 +139,7 @@ export component AppWindow inherits Window {
                     background: AppTheme.current-theme.accent-color;
                     border-radius: AppTheme.current-theme.border-radius;
                     clicked => { root.toggle_incognito(); }
+                    mouse-cursor: pointer;
                 }
                 Button {
                     text: "☆";
@@ -134,6 +148,7 @@ export component AppWindow inherits Window {
                     background: AppTheme.current-theme.accent-color;
                     border-radius: AppTheme.current-theme.border-radius;
                     clicked => { root.add_bookmark(url_bar.text); }
+                    mouse-cursor: pointer;
                 }
                 Button {
                     text: "☰";
@@ -142,6 +157,7 @@ export component AppWindow inherits Window {
                     background: AppTheme.current-theme.accent-color;
                     border-radius: AppTheme.current-theme.border-radius;
                     clicked => { menu_popup.visible = true; }
+                    mouse-cursor: pointer;
                 }
             }
         }
@@ -161,7 +177,7 @@ export component AppWindow inherits Window {
     PopupWindow {
         id: ai_popup;
         width: 400px;
-        height: 320px;
+        height: 350px;
         x: parent.width - 410px;
         y: 70px;
         visible: false;
@@ -198,6 +214,7 @@ export component AppWindow inherits Window {
                     root.ai_request(ai_query.text, ai_mode.current-index);
                     ai_popup.visible = false;
                 }
+                mouse-cursor: pointer;
             }
         }
     }
@@ -206,7 +223,7 @@ export component AppWindow inherits Window {
     PopupWindow {
         id: menu_popup;
         width: 220px;
-        height: 300px;
+        height: 350px;
         x: parent.width - 230px;
         y: 70px;
         visible: false;
@@ -232,6 +249,10 @@ export component AppWindow inherits Window {
             Button {
                 text: "Clear Cookies";
                 clicked => { /* TODO: Wyczyść ciasteczka */ }
+            }
+            Button {
+                text: "Manage Plugins";
+                clicked => { plugins_popup.visible = true; }
             }
             Button {
                 text: "Toggle Dark Mode";
@@ -265,6 +286,12 @@ export component AppWindow inherits Window {
                 color: AppTheme.current-theme.text-color;
             }
             // TODO: Dynamiczna lista zakładek
+            for bookmark in ["Bookmark 1", "Bookmark 2"]: Text {
+                text: bookmark;
+                color: AppTheme.current-theme.text-color;
+                clicked => { root.open_url(bookmark); }
+                mouse-cursor: pointer;
+            }
         }
     }
 
@@ -289,6 +316,36 @@ export component AppWindow inherits Window {
                 color: AppTheme.current-theme.text-color;
             }
             // TODO: Dynamiczna lista historii
+            for history in ["History 1", "History 2"]: Text {
+                text: history;
+                color: AppTheme.current-theme.text-color;
+                clicked => { root.open_url(history); }
+                mouse-cursor: pointer;
+            }
+        }
+    }
+
+    // Popup wtyczek
+    PopupWindow {
+        id: plugins_popup;
+        width: 300px;
+        height: 400px;
+        x: 70px;
+        y: 70px;
+        visible: false;
+        background: AppTheme.current-theme.background;
+        border-radius: AppTheme.current-theme.border-radius;
+        drop-shadow: 0px 2px 5px AppTheme.current-theme.shadow-color;
+
+        VerticalLayout {
+            spacing: 5px;
+            padding: 5px;
+            Text {
+                text: "Plugins";
+                font-size: 18px;
+                color: AppTheme.current-theme.text-color;
+            }
+            // TODO: Dynamiczna lista wtyczek
         }
     }
 
@@ -313,20 +370,49 @@ export component AppWindow inherits Window {
                 color: AppTheme.current-theme.text-color;
             }
             CheckBox {
+                id: block_ads;
                 text: "Block Ads";
                 checked: true;
             }
             CheckBox {
+                id: block_js;
                 text: "Block JavaScript";
                 checked: false;
+            }
+            CheckBox {
+                id: block_fingerprinting;
+                text: "Block Fingerprinting";
+                checked: true;
             }
             Text {
                 text: "Homepage";
                 color: AppTheme.current-theme.text-color;
             }
             TextInput {
+                id: homepage;
                 placeholder-text: "Enter homepage URL";
                 width: parent.width - 20px;
+                text: "https://startpage.com";
+            }
+            Text {
+                text: "Theme";
+                color: AppTheme.current-theme.text-color;
+            }
+            ComboBox {
+                id: theme;
+                model: ["Light", "Dark", "Custom"];
+                current-index: 0;
+                width: parent.width - 20px;
+            }
+            Button {
+                text: "Save";
+                background: AppTheme.current-theme.primary-color;
+                color: AppTheme.current-theme.text-color;
+                border-radius: AppTheme.current-theme.border-radius;
+                clicked => {
+                    root.save_settings(theme.current-value, homepage.text, block_ads.checked, block_js.checked);
+                    settings_popup.visible = false;
+                }
             }
         }
     }
@@ -334,7 +420,9 @@ export component AppWindow inherits Window {
     callback open_url(string);
     callback new_tab();
     callback close_tab(int);
+    callback switch_tab(int);
     callback toggle_incognito();
     callback add_bookmark(string);
     callback ai_request(string, int);
+    callback save_settings(string, string, bool, bool);
 }
