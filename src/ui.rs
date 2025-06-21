@@ -1,19 +1,17 @@
 slint::include_modules!();
 
 pub struct AppWindowWrapper {
-    ui: AppWindow, // AppWindow - to typ z .slint!
+    ui: AppWindow,
 }
 
 impl AppWindowWrapper {
     pub fn new() -> Result<Self, slint::PlatformError> {
-        let ui = AppWindow::new()?; // lub np. AppWindow::from_file(...) jeśli chcesz z pliku
-        Ok(AppWindowWrapper { ui })
+        let ui = AppWindow::new()?;
+        Ok(Self { ui })
     }
-
     pub fn run(&self) -> Result<(), slint::PlatformError> {
         self.ui.run()
     }
-
     pub fn as_weak(&self) -> slint::Weak<AppWindow> {
         self.ui.as_weak()
     }
@@ -21,36 +19,25 @@ impl AppWindowWrapper {
     pub fn on_open_url<F: Fn(String) + 'static>(&self, callback: F) {
         self.ui.on_open_url(callback);
     }
-
     pub fn on_new_tab<F: Fn() + 'static>(&self, callback: F) {
         self.ui.on_new_tab(callback);
     }
-
     pub fn on_close_tab<F: Fn(i32) + 'static>(&self, callback: F) {
         self.ui.on_close_tab(callback);
     }
-
     pub fn on_switch_tab<F: Fn(i32) + 'static>(&self, callback: F) {
         self.ui.on_switch_tab(callback);
     }
-
     pub fn on_toggle_incognito<F: Fn() + 'static>(&self, callback: F) {
         self.ui.on_toggle_incognito(callback);
     }
-
     pub fn on_add_bookmark<F: Fn(String) + 'static>(&self, callback: F) {
         self.ui.on_add_bookmark(callback);
     }
-
     pub fn on_ai_request<F: Fn(String, i32) + 'static>(&self, callback: F) {
         self.ui.on_ai_request(callback);
     }
-
     pub fn on_save_settings<F: Fn(String, String, bool, bool) + 'static>(&self, callback: F) {
         self.ui.on_save_settings(callback);
-    }
-
-    pub fn instance(&self) -> &AppWindow {
-        &self.ui
     }
 }
