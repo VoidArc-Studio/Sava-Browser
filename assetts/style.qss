@@ -1,99 +1,170 @@
-/* Główny styl okna */
+```
+/* Main window */
 QMainWindow {
-    background-color: #f6f7fb;
+    background-color: #f5f6f5;
 }
 
-/* Dock i sidebar */
+/* Sidebar */
 QDockWidget {
-    background-color: #23272e;
-    color: #fff;
+    background-color: #2a2b2e;
+    color: #ffffff;
 }
 QDockWidget::title {
-    background: #23272e;
+    background: #2a2b2e;
     font-weight: bold;
-    color: #fff;
+    color: #ffffff;
 }
-
-/* Pasek narzędzi */
-QToolBar {
-    background: #fff;
-    border: none;
-    padding: 7px;
-}
-
-/* Pasek adresu */
-QLineEdit {
-    padding: 9px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    background: #fafbfc;
+QDockWidget QLabel {
+    color: #ffffff;
+    padding: 10px;
     font-size: 14px;
+}
+QDockWidget QFrame {
+    background: #ffffff;
+    height: 2px;
+}
+
+/* Toolbar */
+QToolBar {
+    background: #ffffff;
+    border: none;
+    padding: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* URL bar */
+QLineEdit {
+    padding: 12px;
+    border: none;
+    border-radius: 30px;
+    margin: 5px 20px;
+    background: #f0f0f0;
+    font-size: 14px;
+    transition: background 0.3s, box-shadow 0.3s;
 }
 QLineEdit:focus {
-    border: 1.5px solid #2e90fa;
-    background: #fff;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
 }
 
-/* Przyciski */
+/* Buttons */
 QPushButton {
-    background: #f4f5f7;
-    border: 1px solid #d0d3d6;
-    border-radius: 8px;
-    color: #23272e;
-    padding: 8px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: #333333;
+    padding: 12px;
     font-size: 14px;
-    min-width: 60px;
+    text-align: left;
+    transition: background 0.2s, transform 0.1s;
 }
 QPushButton:hover {
+    background: #ff6b00;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+QToolBar QPushButton {
+    background: #f4f5f7;
+    border: 1px solid #d0d3d6;
+    color: #23272e;
+    text-align: center;
+}
+QToolBar QPushButton:hover {
     background: #2e90fa;
-    color: #fff;
     border: 1.5px solid #2e90fa;
+    color: #ffffff;
 }
 
-/* Karty */
+/* Tabs */
 QTabWidget::pane {
     border: none;
-    background: #fff;
+    background: #ffffff;
 }
 QTabBar::tab {
-    background: #f5f6fa;
+    background: #d8d9d8;
     color: #23272e;
-    padding: 10px 21px;
-    border-radius: 8px 8px 0 0;
+    padding: 14px 30px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     font-size: 14px;
     margin-right: 2px;
-    border: 1px solid #e0e0e0;
-    border-bottom: none;
+    border: none;
+    transition: background 0.3s, box-shadow 0.3s;
 }
 QTabBar::tab:selected {
-    background: #fff;
-    color: #1e6ccd;
-    border: 1.5px solid #1e6ccd;
-    border-bottom: none;
+    background: #ffffff;
+    border-bottom: 4px solid #ff6b00;
+    box-shadow: 0 -3px 6px rgba(0,0,0,0.1);
 }
 QTabBar::tab:hover {
-    background: #e4e9f7;
-    color: #1e6ccd;
+    background: #c8c9c8;
+}
+QTabBar::close-button {
+    width: 16px;
+    height: 16px;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABmJLR0QA/wD/AP+gvaeTAAAAdUlEQVQokZWOQQrCQAxF7x+wW7AJbsAKbsAK3IAV2IBtYAM2YJfsr3k4Mzs7O8/8vs/MY4wxhhiXyZSO+/1+CoWCoiiKoiRJkmzZSIkiKoiRJkmJ4sU4Hs/zPM/zPM/zvM/zPM/zPM/zPM/zPM/zPM/zvJ/3B5z6L9Yf8r0SAAAAAElFTkSuQkCC);
+    border-radius: 8px;
+    margin-right: 5px;
+}
+QTabBar::close-button:hover {
+    background: #ff5555;
 }
 
-/* Pole tekstowe */
+/* Text edit */
 QTextEdit {
-    background: #fafbfc;
-    border: 1px solid #ccc;
+    background: #f9f9f9;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    color: #23272e;
+}
+
+/* Lists */
+QListWidget {
+    background: #ffffff;
+    border: none;
     border-radius: 8px;
     font-size: 14px;
     color: #23272e;
+    padding: 10px;
 }
 
-/* Listy */
-QListWidget {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 7px;
+/* Labels */
+QLabel {
+    color: #23272e;
     font-size: 14px;
 }
 
-/* Opisy */
-QLabel {
-    color: #23272e;
+/* Dark theme adjustments */
+QMainWindow[theme="Dark"] {
+    background-color: #1c2526;
 }
+QMainWindow[theme="Dark"] QToolBar {
+    background: #2e2f30;
+}
+QMainWindow[theme="Dark"] QLineEdit {
+    background: #3a3b3c;
+}
+QMainWindow[theme="Dark"] QTabBar::tab {
+    background: #4a4b4c;
+}
+QMainWindow[theme="Dark"] QTabBar::tab:hover {
+    background: #5a5b5c;
+}
+QMainWindow[theme="Dark"] QTabBar::tab:selected {
+    background: #2e2f30;
+    border-bottom: 4px solid #ff8c00;
+}
+QMainWindow[theme="Dark"] QTextEdit {
+    background: #3a3b3c;
+    color: #ffffff;
+}
+QMainWindow[theme="Dark"] QListWidget {
+    background: #2e2f30;
+    color: #ffffff;
+}
+QMainWindow[theme="Dark"] QLabel {
+    color: #ffffff;
+}
+```
