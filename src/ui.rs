@@ -30,6 +30,10 @@ impl AppWindow {
         self.ui.on_close_tab(callback);
     }
 
+    pub fn on_switch_tab<F: Fn(i32) + 'static>(&self, callback: F) {
+        self.ui.on_switch_tab(callback);
+    }
+
     pub fn on_toggle_incognito<F: Fn() + 'static>(&self, callback: F) {
         self.ui.on_toggle_incognito(callback);
     }
@@ -40,5 +44,9 @@ impl AppWindow {
 
     pub fn on_ai_request<F: Fn(String, i32) + 'static>(&self, callback: F) {
         self.ui.on_ai_request(callback);
+    }
+
+    pub fn on_save_settings<F: Fn(String, String, bool, bool) + 'static>(&self, callback: F) {
+        self.ui.on_save_settings(callback);
     }
 }
