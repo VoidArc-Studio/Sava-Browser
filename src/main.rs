@@ -1,4 +1,3 @@
-use slint::SlintWeak;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -13,84 +12,118 @@ mod history;
 mod plugins;
 
 use browser::Browser;
-use ui::AppWindow;
+use ui::AppWindowWrapper; // Wrapper, nie ten typ z .slint
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Inicjalizacja Slint
-    let ui = AppWindow::new()?;
-    let ui_handle: SlintWeak<AppWindow> = ui.as_weak();
+    // Inicjalizacja Slint UI
+    let ui = AppWindowWrapper::new()?; // Wrapper zawiera ui: AppWindow (.slint)
+    let ui_handle = ui.as_weak();
 
     // Inicjalizacja przeglądarki
     let browser = Arc::new(Mutex::new(Browser::new()));
     let browser_clone = Arc::clone(&browser);
 
-    // Callbacki dla UI
-    ui.on_open_url(move |url| {
+    // Callbacki UI
+    ui.on_open_url({
         let browser = Arc::clone(&browser_clone);
-        tokio::spawn(async move {
-            let mut browser = browser.lock().await;
-            browser.navigate(url.to_string());
-        });
+        move |url| {
+            let browser = Arc::clone(&browser);
+            tokio::spawn(async move {
+                let mut browser = browser.lock().await;
+                // Potrzebujesz Window dla WebViewBuilder!
+                // browser.navigate(url.to_string(), window);
+                browser.navigate(url.to_string());
+            });
+        }
     });
 
-    ui.on_new_tab(move || {
+    ui.on_new_tab({
         let browser = Arc::clone(&browser_clone);
-        tokio::spawn(async move {
-            let mut browser = browser.lock().await;
-            browser.new_tab();
-        });
+        move || {
+            let browser = Arc::clone(&browser);
+            tokio::spawn(async move {
+                let mut browser = browser.lock().await;
+                // browser.new_tab(window);
+                browser.new_tab();
+            });
+        }
     });
 
-    ui.on_close_tab(move |index| {
+    ui.on_close_tab({
         let browser = Arc::clone(&browser_clone);
-        tokio::spawn(async move {
-            let mut browser = browser.lock().await;
-            browser.close_tab(index as usize);
-        });
+        move |index| {
+            let browser = Arc::clone(&browser);
+            tokio::spawn(async move {
+                let mut browser = browser.lock().await;
+                browser.close_tab(index as usize);
+            });
+        }
     });
 
-    ui.on_switch_tab(move |index| {
+    ui.on_switch_tab({
         let browser = Arc::clone(&browser_clone);
-        tokio::spawn(async move {
-            let mut browser = browser.lock().await;
-            browser.switch_tab(index as usize);
-        });
+        move |index| {
+            let browser = Arc::clone(&browser);
+            tokio::spawn(async move {
+                let mut browser = browser.lock().await;
+                // browser.switch_tab(index as usize, window);
+                browser.switch_tab(index as usize);
+            });
+        }
     });
 
-    ui.on_toggle_incognito(move || {
+    ui.on_toggle_incognito({
         let browser = Arc::clone(&browser_clone);
-        tokio::spawn(async move {
-            let mut browser = browser.lock().await;
-            browser.toggle_incognito();
-        });
+        move || {
+            let browser = Arc::clone(&browser);
+            tokio::spawn(async move {
+                let mut browser = browser.lock().await;
+                // browser.toggle_incognito(window);
+                browser.toggle_incognito();
+            });
+        }
     });
 
-    ui.on_add_bookmark(move |url| {
+    ui.on_add_bookmark({
         let browser = Arc::clone(&browser_clone);
-        tokio::spawn(async move {
-            let mut browser = browser.lock().await;
-            browser.add_bookmark(url.to_string());
-        });
+        move |url| {
+            let browser = Arc::clone(&browser);
+            tokio::spawn(async move {
+                let mut browser = browser.lock().await;
+                browser.add_bookmark(url.to_string());
+            });
+        }
     });
 
     // Inicjalizacja asystenta AI
     let ai = ai_assistant::Assistant::new();
-    ui.on_ai_request(move |query, mode| {
+    ui.on_ai_request({
         let ai = ai.clone();
-        tokio::spawn(async move {
-            let response = ai.handle_request(query.to_string(), mode).await;
-            // TODO: Wyświetl w UI
-            println!("Sava AI Response: {}", response);
-        });
+        move |query, mode| {
+            let ai = ai.clone();
+            tokio::spawn(async move {
+                let response = ai.handle_request(query.to_string(), mode).await;
+                // TODO: Wyświetl w UI
+                println!("Sava AI Response: {}", response);
+            });
+        }
     });
 
-    ui.on_save_settings(move |theme, homepage, block_ads, block_js| {
+    ui.on_save_settings({
         let browser = Arc::clone(&browser_clone);
-        tokio::spawn(async move {
-            let mut browser = browser.lock().await;
-            browser.update_settings(theme.to_string(), homepage.to_string(), block_ads, block_js);
-        });
+        move |theme, homepage, block_ads, block_js| {
+            let browser = Arc::clone(&browser);
+            tokio::spawn(async move {
+                let mut browser = browser.lock().await;
+                browser.update_settings(
+                    theme.to_string(),
+                    homepage.to_string(),
+                    block_ads,
+                    block_js,
+                );
+            });
+        }
     });
 
     // Uruchomienie UI
