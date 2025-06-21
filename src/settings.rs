@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::io::{self, Write};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Settings {
     pub theme: String,
     pub homepage: String,
@@ -13,7 +14,13 @@ pub struct Settings {
 
 impl Settings {
     pub fn load() -> Self {
-        // TODO: Wczytaj z pliku JSON
+        let path = "settings.json";
+        if let Ok(data) = fs::read_to_string(path) {
+            if let Ok(settings) = serde_json::from_str(&data) {
+                return settings;
+            }
+        }
+        // Domyślne ustawienia, jeśli plik nie istnieje lub niepoprawny
         Settings {
             theme: "dark".to_string(),
             homepage: "https://startpage.com".to_string(),
@@ -25,7 +32,16 @@ impl Settings {
     }
 
     pub fn save(&self) {
-        // TODO: Zapisz do pliku JSON
-        println!("Settings saved: {:?}", self);
+        let path = "settings.json";
+        match serde_json::to_string_pretty(self) {
+            Ok(json) => {
+                if let Err(e) = fs::File::create(path).and_then(|mut f| f.write_all(json.as_bytes())) {
+                    eprintln!("Błąd zapisu ustawień: {e}");
+                } else {
+                    println!("Settings saved: {:?}", self);
+                }
+            }
+            Err(e) => eprintln!("Błąd serializacji ustawień: {e}"),
+        }
     }
 }
