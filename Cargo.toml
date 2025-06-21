@@ -13,14 +13,11 @@ rand = "0.8"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
-tokio = { version = "1.38", features = ["full"] }
-
-# Jeśli korzystasz z oauth2, wasm, lub innych bibliotek, odkomentuj i dostosuj wersje:
-# oauth2 = "4.4"
-# wasm-bindgen = "0.2"
-
-[build-dependencies]
-# Slint wymaga build.rs, ale nie potrzebuje tu dodatkowych zależności.
+tokio = { version = "1.37", features = ["full"] }
+reqwest = { version = "0.12", features = ["json", "blocking", "rustls-tls"] }
+oauth2 = "4.4"
+urlencoding = "2.1"
+wasm-bindgen = "0.2"
 
 [profile.release]
 opt-level = 3
