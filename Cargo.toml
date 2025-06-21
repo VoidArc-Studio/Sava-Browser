@@ -4,20 +4,22 @@ version = "0.3.0"
 edition = "2021"
 
 [dependencies]
-slint = "1.8"                             # GUI
-wry = "0.24"                             # WebView
+slint = "1.8"                              # GUI
+wry = "0.24"                               # WebView
 reqwest = { version = "0.12", features = ["json", "blocking"] } # HTTP client
 serde = { version = "1.0", features = ["derive"] }              # Serializacja
-serde_json = "1.0"                       # JSON
+serde_json = "1.0"                         # JSON
 tokio = { version = "1.40", features = ["full"] }               # Async runtime
-url = "2.5"                              # Parsowanie URL
-webbrowser = "0.8"                       # Otwieranie linków
-keyring = "2.0"                          # Szyfrowane hasła
-rand = "0.8"                             # Losowe User-Agent
-oauth2 = "4.4"                           # Autoryzacja OAuth
-aes-gcm = "0.10"                         # Szyfrowanie danych
-wasm-bindgen = "0.2"                     # Obsługa WebAssembly
-chrono = "0.4"                           # Czas
+url = "2.5"                                # Parsowanie URL
+webbrowser = "0.8"                         # Otwieranie linków
+keyring = "2.0"                            # Szyfrowane hasła
+rand = "0.8"                               # Losowe User-Agent
+oauth2 = "4.4"                             # Autoryzacja OAuth
+aes-gcm = "0.10"                           # Szyfrowanie danych
+wasm-bindgen = "0.2"                       # Obsługa WebAssembly
+chrono = "0.4"                             # Czas
 
-# Adblock z GitHuba, bo wersje z crates.io nie działają przez yanked dependency
+# Adblock z GitHuba - jeśli masz problem z autoryzacją, użyj CLI lub SSH (patrz niżej)
 adblock = { git = "https://github.com/ArniDagur/adblock-rs.git", rev = "7c3c1d2" }
+# Jeżeli masz skonfigurowane klucze SSH, możesz użyć:
+# adblock = { git = "ssh://git@github.com/ArniDagur/adblock-rs.git", rev = "7c3c1d2" }
