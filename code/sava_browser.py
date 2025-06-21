@@ -3,7 +3,7 @@ import os
 import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt5.QtCore import QUrl, QSettings, Qt, QTimer
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 import datetime
 
 from sava_ui import SavaUI  # Absolute import
@@ -84,7 +84,10 @@ class SavaBrowser(QMainWindow):
         session = {
             "name": session_name,
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "tabs": [{"url": self.ui.tabs.widget(i).url().toString(), "title": self.ui.tabs.tabText(i)} for i in range(self.ui.tabs.count())]
+            "tabs": [
+                {"url": self.ui.tabs.widget(i).url().toString(), "title": self.ui.tabs.tabText(i)}
+                for i in range(self.ui.tabs.count())
+            ]
         }
         self.sessions.append(session)
         self.save_file("sessions.json", self.sessions)
