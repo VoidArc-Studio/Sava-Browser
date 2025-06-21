@@ -4,18 +4,18 @@ version = "0.3.0"
 edition = "2021"
 
 [dependencies]
-slint = "1.8"                         # GUI
-wry = "0.24"                         # WebView
+slint = "1.8"                             # GUI
+wry = "0.24"                             # WebView
 reqwest = { version = "0.12", features = ["json", "blocking"] } # HTTP client
-serde = { version = "1.0", features = ["derive"] } # Serializacja
-serde_json = "1.0"                   # JSON
-tokio = { version = "1.40", features = ["full"] } # Async runtime
-url = "2.5"                          # Parsowanie URL
-webbrowser = "0.8"                   # Otwieranie linków
-keyring = "2.0"                      # Szyfrowane hasła
-adblock-rust = "0.7"                 # Blokowanie reklam
-rand = "0.8"                         # Losowe User-Agent
-oauth2 = "4.4"                       # Autoryzacja OAuth
-aes-gcm = "0.10"                     # Szyfrowanie danych
-wasm-bindgen = "0.2"                 # Obsługa WebAssembly
-chrono = "0.4"                       # Czas
+serde = { version = "1.0", features = ["derive"] }              # Serializacja
+serde_json = "1.0"                       # JSON
+tokio = { version = "1.40", features = ["full"] }               # Async runtime
+url = "2.5"                              # Parsowanie URL
+webbrowser = "0.8"                       # Otwieranie linków
+keyring = "2.0"                          # Szyfrowane hasła
+adblock = "0.7"                          # Blokowanie reklam (poprawiona nazwa crate)
+rand = "0.8"                             # Losowe User-Agent
+oauth2 = "4.4"                           # Autoryzacja OAuth
+aes-gcm = "0.10"                         # Szyfrowanie danych
+wasm-bindgen = "0.2"                     # Obsługa WebAssembly
+chrono = "0.4"                           # Czas
