@@ -1,2 +1,2 @@
 # Sava-Browser
-Browser written in rust.
+Browser written in java script.
