@@ -45,7 +45,7 @@ cd Sava-Browser
 
 # 5. Kopiowanie plików do /opt/sava-browser
 echo "Kopiowanie plików do /usr/bin/sava-browser..."
-sudo mkdir -p /usr/bin/sava-browser
+sudo mkdir -p /usr/share/sava-browser
 sudo cp -r frontend/dist/* /usr/bin/sava-browser/
 sudo cp -r backend /usr/share/sava-browser/backend
 sudo cp -r frontend/src/renderer/assets /usr/share/sava-browser/assets
