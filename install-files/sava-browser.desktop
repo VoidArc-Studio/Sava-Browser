@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Sava Browser
+Comment=A privacy-focused, customizable web browser
+Exec=/opt/sava-browser/sava-browser
+Path=/opt/sava-browser/
+Type=Application
+Icon=/opt/sava-browser/assets/icon.png
+Terminal=false
+Categories=Network;WebBrowser;
