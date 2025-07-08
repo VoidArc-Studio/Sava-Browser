@@ -1,0 +1,9 @@
+name: sava-browser-backend
+version: 0.1.0
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  http:
+    github: crystal-lang/http
+  json:
+    github: crystal-lang/json
