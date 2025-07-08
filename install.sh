@@ -29,27 +29,27 @@ fi
 echo "Instalowanie zależności frontendu..."
 cd frontend
 npm install
-cd ..
+cd Sava-Browser
 
 # 3. Instalacja zależności backendu
 echo "Instalowanie zależności backendu..."
 cd backend
 shards install
-cd ..
+cd Sava-Browser
 
 # 4. Budowanie aplikacji Electron
 echo "Budowanie aplikacji Electron..."
 cd frontend
 npm run build
-cd ..
+cd Sava-Browser
 
 # 5. Kopiowanie plików do /opt/sava-browser
-echo "Kopiowanie plików do /opt/sava-browser..."
-sudo mkdir -p /opt/sava-browser
-sudo cp -r frontend/dist/* /opt/sava-browser/
-sudo cp -r backend /opt/sava-browser/backend
-sudo cp -r frontend/src/renderer/assets /opt/sava-browser/assets
-sudo chmod -R 755 /opt/sava-browser
+echo "Kopiowanie plików do /usr/bin/sava-browser..."
+sudo mkdir -p /usr/bin/sava-browser
+sudo cp -r frontend/dist/* /usr/bin/sava-browser/
+sudo cp -r backend /usr/share/sava-browser/backend
+sudo cp -r frontend/src/renderer/assets /usr/share/sava-browser/assets
+sudo chmod -R 755 /usr/bin/sava-browser
 
 # 6. Kopiowanie pliku .desktop
 echo "Kopiowanie pliku .desktop do /usr/share/applications..."
