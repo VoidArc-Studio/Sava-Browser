@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Sava Browser</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <button onclick="openSection('tabs')">Zakładki</button>
+      <button onclick="openSection('adblock')">Bloker reklam</button>
+      <button onclick="openSection('ai')">Sava AI</button>
+      <button onclick="openSection('downloads')">Pobieranie</button>
+      <button onclick="openSection('notes')">Notatnik</button>
+      <button onclick="openSection('email')">Poczta</button>
+      <button onclick="openSection('streaming')">Streaming</button>
+      <button onclick="openSection('settings')">Ustawienia</button>
+    </div>
+    <div class="tab-bar" id="tab-bar"></div>
+    <div class="content" id="content">
+      <webview id="webview" src="https://www.startpage.com" style="width:100%;height:100%"></webview>
+    </div>
+  </div>
+  <script src="scripts/browser.js"></script>
+</body>
+</html>
