@@ -1,0 +1,17 @@
+{
+  "name": "sava-browser",
+  "version": "1.0.0",
+  "main": "frontend/src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "electron": "^26.0.0",
+    "axios": "^1.7.2",
+    "spotify-web-api-node": "^5.0.2"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.6.4"
+  }
+}
