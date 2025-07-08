@@ -1,0 +1,5 @@
+{
+  "port": 3000,
+  "ad_block_enabled": true,
+  "ai_api_endpoint": "https://api.x.ai/v3/grok"
+}
