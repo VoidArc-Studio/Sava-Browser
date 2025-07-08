@@ -4,6 +4,6 @@ Comment=A privacy-focused, customizable web browser
 Exec=/opt/sava-browser/sava-browser
 Path=/usr/bin/sava-browser/
 Type=Application
-Icon=/usr/share/sava-browser/assets/icon.png
+Icon=/usr/share/sava-browser/backend/public/assets/images/icon.png
 Terminal=false
 Categories=Network;WebBrowser;
